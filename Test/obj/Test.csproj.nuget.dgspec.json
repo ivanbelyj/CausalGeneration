@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\Test.csproj": {}
+    "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\Test.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj": {
+    "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj",
+        "projectUniqueName": "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj",
         "projectName": "CausalGeneration",
-        "projectPath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj",
+        "projectPath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\obj\\",
+        "outputPath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -58,14 +58,14 @@
         }
       }
     },
-    "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\Test.csproj": {
+    "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\Test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\Test.csproj",
+        "projectUniqueName": "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\Test.csproj",
         "projectName": "Test",
-        "projectPath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\Test.csproj",
+        "projectPath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\Test.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\obj\\",
+        "outputPath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -82,8 +82,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj": {
-                "projectPath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj"
+              "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj": {
+                "projectPath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\CausalGeneration\\CausalGeneration.csproj"
               }
             }
           }

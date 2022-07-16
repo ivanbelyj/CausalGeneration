@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    public class CausesNest
+    public class CausesNest : IEnumerable<CausalModelEdge>
     {
         public class CausesGroup
         {
@@ -15,20 +16,20 @@ namespace CausalGeneration
                 Edges = edges;
             }
 
-            protected CausalModelEdge[] Edges { get; set; }
+            public CausalModelEdge[] Edges { get; set; }
 
             public bool? IsHappened()
             {
-                float? actualTotalP = GetTotalActualProbability();
-                float totalP = GetTotalProbability();
+                double? actualTotalP = GetTotalActualProbability();
+                double totalP = GetTotalProbability();
                 if (!actualTotalP.HasValue)
                     return null;
                 return (totalP - actualTotalP.Value) >= 0;
             }
 
-            public float GetTotalProbability() => GetTotalProduct(edge => edge.Probability);
+            public double GetTotalProbability() => GetTotalProduct(edge => edge.Probability);
 
-            public float? GetTotalActualProbability()
+            public double? GetTotalActualProbability()
             {
                 // Если хотя бы одна фактическая вероятность не определена
                 if (Edges.Any(cause => !cause.ActualProbability.HasValue))
@@ -40,14 +41,14 @@ namespace CausalGeneration
 #pragma warning restore CS8629  // Nullable value type may be null.
             }
 
-            private float GetTotalProduct(Func<CausalModelEdge, float> getProperty)
+            private double GetTotalProduct(Func<CausalModelEdge, double> getProperty)
             {
-                float res = 1;
+                double res = 1;
                 foreach (CausalModelEdge edge in Edges)
                 {
-                    if (Math.Abs(getProperty(edge)) < float.Epsilon)
+                    if (Math.Abs(getProperty(edge)) < double.Epsilon)
                         return 0;
-                    res *= edge.Probability;
+                    res *= getProperty(edge);
                 }
                 return res;
             }
@@ -65,7 +66,7 @@ namespace CausalGeneration
             _groups = new CausesGroup[] { new CausesGroup(edges) };
         }
 
-        public CausesNest(Guid? causeId, float probability)
+        public CausesNest(Guid? causeId, double probability)
         {
             CausalModelEdge edge = new CausalModelEdge()
             {
@@ -79,25 +80,43 @@ namespace CausalGeneration
         /// <summary>
         /// Определено на 2-м этапе генерации
         /// </summary>
-        public bool? IsHappened
+        public bool? IsHappened()
         {
-            get
+            foreach (CausesGroup item in _groups)
             {
-                foreach (CausesGroup item in _groups)
+                bool? isHappened = item.IsHappened();
+                if (isHappened.HasValue)
                 {
-                    bool? isHappened = item.IsHappened();
-                    if (isHappened.HasValue)
-                    {
-                        if (isHappened.Value)
-                            return true;
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    if (isHappened.Value)
+                        return true;
                 }
-                return false;
+                else
+                {
+                    return null;
+                }
             }
+            return false;
+        }
+
+        public IEnumerator<CausalModelEdge> GetEnumerator()
+        {
+            foreach (CausesGroup group in _groups)
+            {
+                foreach (CausalModelEdge edge in group.Edges)
+                {
+                    yield return edge;
+                }
+            }
+        }
+        
+        IEnumerator<CausalModelEdge> IEnumerable<CausalModelEdge>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
     

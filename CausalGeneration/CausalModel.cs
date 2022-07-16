@@ -12,11 +12,11 @@ namespace CausalGeneration
         /// Id корневых узлов
         /// </summary>
         private List<Guid> _roots;
-        private List<CausalModelNode<TNodeValue>> _nodes;
+        public List<CausalModelNode<TNodeValue>> _nodes;
 
         public CausalModelNode<TNodeValue>? FindNodeById(Guid id)
         {
-            return _nodes.FirstOrDefault(x => x.Id == id);
+            return _nodes.First(x => x.Id == id);
         }
 
         // Методы для определения и построения модели
@@ -44,7 +44,7 @@ namespace CausalGeneration
             _roots.Add(id);
         }
 
-        public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, float probability)
+        public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, double probability)
         {
             var node = AddNode(new CausesNest(null, probability), value);
             AddRoot(node.Id);
@@ -70,9 +70,24 @@ namespace CausalGeneration
         }
         #endregion
 
-        public void BuildModel()
+        public void GenerateModel()
         {
+            DefineActualProbabilities();
+        }
 
+        private void DefineActualProbabilities()
+        {
+            Random rnd = new Random();
+            foreach (CausalModelNode<TNodeValue> node in _nodes)
+            {
+                foreach (CausalModelEdge edge in node.CausesNest)
+                {
+                    if (!edge.ActualProbability.HasValue)
+                    {
+                        edge.ActualProbability = rnd.NextDouble();
+                    }
+                }
+            } 
         }
     }
 }

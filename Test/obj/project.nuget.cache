@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QsdvW1+A0fMxEifxzcASUItmka9+yh9I+cXJ3yvRh3ERHO1kaDMpWhLA2O8KjgWdP+TxjyrWDBvSD+pkhAVJkw==",
+  "dgSpecHash": "6SX2FeL5lUpQOVELmJnscWjwriInLoheiTgNFJUVyMDCizQ47Aec6tYdnliDpIzFx3ejZjxYykXseuSL3kn3NQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\User\\source\\repos\\!ASP .NET Core\\CausalGeneration\\Test\\Test.csproj",
+  "projectFilePath": "C:\\Users\\User\\source\\repos\\CausalGeneration\\Test\\Test.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

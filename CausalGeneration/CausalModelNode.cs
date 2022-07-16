@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    public struct CausalModelNode<TNodeValue>
+    public class CausalModelNode<TNodeValue>
     {
         public CausalModelNode(Guid id, CausesNest causesNest,
             TNodeValue? value = default(TNodeValue))
@@ -35,5 +35,22 @@ namespace CausalGeneration
         /// графа на 2-ом этапе.
         /// </summary>
         internal CausalModelNode<TNodeValue>[]? Effects { get; set; } = null;
+
+        public override string ToString()
+        {
+            string str = $"Node {Id}\n";
+            str += Value?.ToString() + "\n";
+
+            bool? isHappened = CausesNest.IsHappened();
+            if (isHappened.HasValue)
+                str += $"Is happened: {isHappened}\n";
+
+            str += "Edges\n";
+            foreach (CausalModelEdge edge in CausesNest)
+            {
+                str += $"\t{edge.ToString()}\n";
+            }
+            return str;
+        }
     }
 }
