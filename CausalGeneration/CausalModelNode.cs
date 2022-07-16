@@ -34,7 +34,7 @@ namespace CausalGeneration
         /// Определяется после 1-го этапа генерации. Требуется для обхода
         /// графа на 2-ом этапе.
         /// </summary>
-        internal CausalModelNode<TNodeValue>[]? Effects { get; set; } = null;
+        internal List<CausalModelNode<TNodeValue>>? Effects { get; set; } = null;
 
         public override string ToString()
         {
@@ -48,7 +48,7 @@ namespace CausalGeneration
             str += "Edges\n";
             foreach (CausalModelEdge edge in CausesNest)
             {
-                str += $"\t{edge.ToString()}\n";
+                str += $"\t{edge}\n";
             }
             return str;
         }

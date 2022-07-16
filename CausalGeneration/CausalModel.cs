@@ -16,7 +16,7 @@ namespace CausalGeneration
 
         public CausalModelNode<TNodeValue>? FindNodeById(Guid id)
         {
-            return _nodes.First(x => x.Id == id);
+            return _nodes.FirstOrDefault(x => x.Id == id);
         }
 
         // Методы для определения и построения модели
@@ -72,10 +72,10 @@ namespace CausalGeneration
 
         public void GenerateModel()
         {
-            DefineActualProbabilities();
+            GenerationStageOne();
         }
 
-        private void DefineActualProbabilities()
+        private void GenerationStageOne()
         {
             Random rnd = new Random();
             foreach (CausalModelNode<TNodeValue> node in _nodes)
@@ -85,6 +85,20 @@ namespace CausalGeneration
                     if (!edge.ActualProbability.HasValue)
                     {
                         edge.ActualProbability = rnd.NextDouble();
+                    }
+                    // Если у узла есть причина, значит узел - ее следствие
+                    if (edge.CauseId.HasValue)
+                    {
+                        CausalModelNode<TNodeValue>? cause =
+                            FindNodeById(edge.CauseId.Value);
+                        if (cause != null)
+                        {
+                            if (cause.Effects == null)
+                            {
+                                cause.Effects = new List<CausalModelNode<TNodeValue>>();
+                            }
+                            cause.Effects.Add(node);
+                        }
                     }
                 }
             } 
