@@ -32,7 +32,7 @@ foreach (CausalModelEdge edge in conlangHobby.CausesNest)
     Console.WriteLine(hobbyRoot.Id + " " + 0.3);
 }
 
-model.GenerateModel();
+model.Generate();
 foreach (var node in model._nodes)
 {
     Console.WriteLine(node.ToString());

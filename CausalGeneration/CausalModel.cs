@@ -70,15 +70,11 @@ namespace CausalGeneration
         }
         #endregion
 
-        public void GenerateModel()
+        public void Generate()
         {
-            GenerationStageOne();
-        }
-
-        private void GenerationStageOne()
-        {
+            // Подготовка. 1 этап
             Random rnd = new Random();
-            foreach (CausalModelNode<TNodeValue> node in _nodes)
+            foreach (CausalModelNode<TNodeValue> node in _nodes.Select(x => x).ToList())
             {
                 foreach (CausalModelEdge edge in node.CausesNest)
                 {
@@ -86,6 +82,26 @@ namespace CausalGeneration
                     {
                         edge.ActualProbability = rnd.NextDouble();
                     }
+
+                }
+                // Можно вызывать IsHappened
+                bool? isHappened = node.CausesNest.IsHappened();
+                // Если такое вообще возможно
+                if (!isHappened.HasValue)
+                {
+                    throw new Exception("Ошибка на этапе отбрасывания непроизошедшего." +
+                        " Не определено, произошло ли событие.");
+                }
+                if (!isHappened.Value)
+                {
+                    DiscardNode(node);
+                    continue;
+                }
+
+                // Для того, что, возможно, произошло, собираются следствия
+                // для дальнейшего обхода.
+                foreach (CausalModelEdge edge in node.CausesNest)
+                {
                     // Если у узла есть причина, значит узел - ее следствие
                     if (edge.CauseId.HasValue)
                     {
@@ -101,7 +117,44 @@ namespace CausalGeneration
                         }
                     }
                 }
-            } 
+            }
+        }
+
+        // Todo: IsHappened свидетельствует только о выполнении необходимого условия
+        // происшествия события.
+        // ActualProbability, строго говоря, - не вероятность
+
+        //private void DiscardAllNotHappened()
+        //{
+        //    foreach (var node in _nodes)
+        //    {
+        //        if ((!node.CausesNest.IsHappened()) ?? false)
+        //        {
+        //            DiscardNode(node);
+        //        }
+        //    }
+        //}
+
+        private void DiscardNode(CausalModelNode<TNodeValue> node)
+        {
+            // 1. Для каждого следствия удалить node из гнезда причин,
+            // чтобы не учитывать непроизошедшее событие в сгенерированной модели
+
+            if (node.Effects != null)
+            {
+                node.Effects.ForEach(effect =>
+                {
+                    effect.CausesNest.DiscardCause(node.Id);
+                });
+            } else
+            {
+                // Иначе это лист графа, он не имеет следствий
+            }
+
+            // 2. По видимому, не требуется для каждой причины удалять node из Effects
+
+            // 3. Удалить из _nodes, т.к. событие больше не нужно
+            _nodes.Remove(node);
         }
     }
 }

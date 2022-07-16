@@ -13,10 +13,10 @@ namespace CausalGeneration
         {
             public CausesGroup(CausalModelEdge[] edges)
             {
-                Edges = edges;
+                Edges = edges.ToList();
             }
 
-            public CausalModelEdge[] Edges { get; set; }
+            public List<CausalModelEdge> Edges { get; set; }
 
             public bool? IsHappened()
             {
@@ -77,9 +77,6 @@ namespace CausalGeneration
             _groups = new CausesGroup[] { new CausesGroup(edgesArr) };
         }
 
-        /// <summary>
-        /// Определено на 2-м этапе генерации
-        /// </summary>
         public bool? IsHappened()
         {
             foreach (CausesGroup item in _groups)
@@ -96,6 +93,24 @@ namespace CausalGeneration
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Используется на 2-м этапе генерации
+        /// </summary>
+        public void DiscardCause(Guid causeId)
+        {
+            foreach (CausesGroup group in _groups)
+            {
+                foreach (CausalModelEdge edge in group.Edges)
+                {
+                    if (edge.CauseId == causeId)
+                    {
+                        group.Edges.Remove(edge);
+                        return;
+                    }
+                }
+            }
         }
 
         public IEnumerator<CausalModelEdge> GetEnumerator()
