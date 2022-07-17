@@ -18,6 +18,11 @@ namespace CausalGeneration
         public CausalModelNode(CausesNest causesNest,
             TNodeValue? value = default(TNodeValue))
                 : this(Guid.NewGuid(), causesNest, value) { }
+        public CausalModelNode()
+        {
+            CausesNest = new CausesNest();
+        }
+        
 
         public Guid Id { get; set; }
 

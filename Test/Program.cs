@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 CausalModel<string> model = new CausalModel<string>();
-CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0);
+CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0.9);
 
 foreach (string hobbyName in new string[] { "рисование",
     "музыка", "ворлдбилдинг", "программирование",
@@ -30,26 +30,30 @@ foreach (string nodeValue in new string[] { "создал 1 язык",
     model.AddNode(node);
 }
 
-JsonSerializerOptions options = new JsonSerializerOptions() {
-    WriteIndented = true,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
-};
-Serialize(model, "model");
+//JsonSerializerOptions options = new JsonSerializerOptions() {
+//    WriteIndented = true,
+//    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+//    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
+//};
+// ToFile(model, "model");
 
-model.Generate();
+// model.Generate();
 
-Serialize(model, "generated_model");
+// ToFile(model, "generated_model");
+
+var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
+deserializedModel?.Generate();
+if (deserializedModel != null)
+    ToFile(deserializedModel, "generated_model2");
 
 Console.ReadKey(true);
 
-void Serialize<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {
-    string jsonString = JsonSerializer.Serialize(model, options);
+    string jsonString = model.ToJson(true);
     if (!fileName.EndsWith(".json"))
     {
         fileName += ".json";
     }
     File.WriteAllText(fileName, jsonString);
-    // Console.WriteLine(File.ReadAllText(fileName));
 }

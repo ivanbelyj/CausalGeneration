@@ -1,4 +1,57 @@
 {
-  "Roots": [],
-  "Nodes": []
+  "Roots": [
+    "a311abbe-f7b3-49c8-a562-8191857a57a5"
+  ],
+  "Nodes": [
+    {
+      "Id": "4e45c7a1-2424-4fdf-be92-25429240752a",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "ActualProbability": 0.228934944901363,
+                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "музыка"
+    },
+    {
+      "Id": "cdcfeba7-ca83-4578-8e3f-6858447e3eef",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "ActualProbability": 0.36352554055867026,
+                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "программирование"
+    },
+    {
+      "Id": "a311abbe-f7b3-49c8-a562-8191857a57a5",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.9,
+                "ActualProbability": 0.11221681924261628
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "Хобби"
+    }
+  ]
 }

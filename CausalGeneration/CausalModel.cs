@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace CausalGeneration
@@ -55,19 +58,39 @@ namespace CausalGeneration
         #endregion
 
         #region Json
-        public CausalModel(string json) : this()
+        public async Task ToJsonAsync(Stream stream, bool writeIndented = false)
         {
-            throw new NotImplementedException();
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                WriteIndented = writeIndented,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            };
+            await JsonSerializer.SerializeAsync(stream, this, options);
         }
-        public string ToJson()
+
+        public string ToJson(bool writeIndented = false)
         {
-            throw new NotImplementedException();
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                WriteIndented = writeIndented,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            };
+            return JsonSerializer.Serialize(this, options);
         }
 
         // Todo: Какой тип модели?
-        public static CausalModel<TNodeValue> FromJson()
+        public static CausalModel<TNodeValue>? FromJson(string jsonString)
         {
-            throw new NotImplementedException();
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true,
+            };
+            var model = JsonSerializer.Deserialize<CausalModel<TNodeValue>>(jsonString);
+            return model;
         }
         #endregion
 
@@ -138,7 +161,8 @@ namespace CausalGeneration
                 {
                     effect.CausesNest.DiscardCause(node.Id);
                 });
-            } else
+            }
+            else
             {
                 // Иначе это лист графа, он не имеет следствий
             }

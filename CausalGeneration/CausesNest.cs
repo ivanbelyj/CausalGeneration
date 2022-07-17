@@ -16,6 +16,9 @@ namespace CausalGeneration
                 Edges = edges.ToList();
             }
 
+            // Для десериализации json
+            public CausesGroup() : this(new CausalModelEdge[] { }) { }
+
             public List<CausalModelEdge> Edges { get; set; }
 
             /// <summary>
@@ -69,6 +72,9 @@ namespace CausalGeneration
         {
             Groups = new CausesGroup[] { new CausesGroup(edges) };
         }
+
+        // Для десериализации json
+        public CausesNest() : this(new CausesGroup[] { }) { }
 
         public CausesNest(Guid? causeId, double probability)
         {
