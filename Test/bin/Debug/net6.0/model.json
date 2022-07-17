@@ -1,0 +1,166 @@
+{
+  "Roots": [
+    "2b8ab094-b911-4601-95a4-a1072ddff963"
+  ],
+  "Nodes": [
+    {
+      "Id": "2b8ab094-b911-4601-95a4-a1072ddff963",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "Хобби"
+    },
+    {
+      "Id": "7ba100df-aad0-438f-992f-7212bbf96cec",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "рисование"
+    },
+    {
+      "Id": "5ee91ddd-de15-4d5d-a488-946033797487",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "музыка"
+    },
+    {
+      "Id": "69bbf3d5-111e-4399-a8d3-84830b9bdb5f",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "ворлдбилдинг"
+    },
+    {
+      "Id": "5ad5d828-14aa-4582-97ad-891322ec7dc6",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "программирование"
+    },
+    {
+      "Id": "2672b662-531f-461f-92c5-0184127a44cb",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.5,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "писательство"
+    },
+    {
+      "Id": "4833c7ec-c934-490e-80a6-af45a28ac1a2",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.3,
+                "CauseId": "2b8ab094-b911-4601-95a4-a1072ddff963"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "Создание языков"
+    },
+    {
+      "Id": "4f408d8c-d0e7-448f-926e-263ca536cbad",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.7,
+                "CauseId": "4833c7ec-c934-490e-80a6-af45a28ac1a2"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "создал 1 язык"
+    },
+    {
+      "Id": "d663a68f-624c-4efa-aa7b-b203b6aea42b",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.7,
+                "CauseId": "4833c7ec-c934-490e-80a6-af45a28ac1a2"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "разбирается в лингвистике"
+    },
+    {
+      "Id": "116e3771-68c5-440e-8172-c943836aecdd",
+      "CausesNest": {
+        "Groups": [
+          {
+            "Edges": [
+              {
+                "Probability": 0.7,
+                "CauseId": "4833c7ec-c934-490e-80a6-af45a28ac1a2"
+              }
+            ]
+          }
+        ]
+      },
+      "Value": "говорит на нескольких языках"
+    }
+  ]
+}

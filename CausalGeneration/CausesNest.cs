@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    public class CausesNest : IEnumerable<CausalModelEdge>
+    public class CausesNest
     {
         public class CausesGroup
         {
@@ -18,13 +18,17 @@ namespace CausalGeneration
 
             public List<CausalModelEdge> Edges { get; set; }
 
+            /// <summary>
+            /// Todo: IsHappened свидетельствует только о выполнении необходимого условия
+            /// происшествия события.
+            /// </summary>
             public bool? IsHappened()
             {
                 double? actualTotalP = GetTotalActualProbability();
                 double totalP = GetTotalProbability();
                 if (!actualTotalP.HasValue)
                     return null;
-                return (totalP - actualTotalP.Value) >= 0;
+                return (totalP - actualTotalP.Value) > 0;
             }
 
             public double GetTotalProbability() => GetTotalProduct(edge => edge.Probability);
@@ -54,16 +58,16 @@ namespace CausalGeneration
             }
         }
 
-        private CausesGroup[] _groups;
+        public CausesGroup[] Groups { get; set; }
 
         public CausesNest(CausesGroup[] groups)
         {
-            _groups = groups;
+            Groups = groups;
         }
 
         public CausesNest(params CausalModelEdge[] edges)
         {
-            _groups = new CausesGroup[] { new CausesGroup(edges) };
+            Groups = new CausesGroup[] { new CausesGroup(edges) };
         }
 
         public CausesNest(Guid? causeId, double probability)
@@ -74,12 +78,12 @@ namespace CausalGeneration
                 CauseId = causeId
             };
             CausalModelEdge[] edgesArr = new CausalModelEdge[] { edge };
-            _groups = new CausesGroup[] { new CausesGroup(edgesArr) };
+            Groups = new CausesGroup[] { new CausesGroup(edgesArr) };
         }
 
         public bool? IsHappened()
         {
-            foreach (CausesGroup item in _groups)
+            foreach (CausesGroup item in Groups)
             {
                 bool? isHappened = item.IsHappened();
                 if (isHappened.HasValue)
@@ -100,7 +104,7 @@ namespace CausalGeneration
         /// </summary>
         public void DiscardCause(Guid causeId)
         {
-            foreach (CausesGroup group in _groups)
+            foreach (CausesGroup group in Groups)
             {
                 foreach (CausalModelEdge edge in group.Edges)
                 {
@@ -113,25 +117,15 @@ namespace CausalGeneration
             }
         }
 
-        public IEnumerator<CausalModelEdge> GetEnumerator()
+        public IEnumerable<CausalModelEdge> Edges()
         {
-            foreach (CausesGroup group in _groups)
+            foreach (CausesGroup group in Groups)
             {
                 foreach (CausalModelEdge edge in group.Edges)
                 {
                     yield return edge;
                 }
             }
-        }
-        
-        IEnumerator<CausalModelEdge> IEnumerable<CausalModelEdge>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
     

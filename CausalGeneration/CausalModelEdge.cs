@@ -19,7 +19,8 @@ namespace CausalGeneration
         /// Значение, определяющее, повлекла ли причинно-следственная связь за собой
         /// событие в текущей генерации. <br/>
         /// До генерации - null. <br/>
-        /// Значение от 0 до 1.0
+        /// Значение от 0 до 1.0 <br />
+        /// ActualProbability, строго говоря, - не вероятность
         /// </summary>
         public double? ActualProbability { get; set; }
 

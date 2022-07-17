@@ -1,7 +1,11 @@
-﻿using CausalGeneration;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using CausalGeneration;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 CausalModel<string> model = new CausalModel<string>();
-CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0.9);
+CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0);
 
 foreach (string hobbyName in new string[] { "рисование",
     "музыка", "ворлдбилдинг", "программирование",
@@ -26,15 +30,26 @@ foreach (string nodeValue in new string[] { "создал 1 язык",
     model.AddNode(node);
 }
 
-foreach (CausalModelEdge edge in conlangHobby.CausesNest)
-{
-    Console.WriteLine(edge.CauseId + " " + edge.Probability);
-    Console.WriteLine(hobbyRoot.Id + " " + 0.3);
-}
+JsonSerializerOptions options = new JsonSerializerOptions() {
+    WriteIndented = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
+};
+Serialize(model, "model");
 
 model.Generate();
-foreach (var node in model._nodes)
+
+Serialize(model, "generated_model");
+
+Console.ReadKey(true);
+
+void Serialize<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {
-    Console.WriteLine(node.ToString());
+    string jsonString = JsonSerializer.Serialize(model, options);
+    if (!fileName.EndsWith(".json"))
+    {
+        fileName += ".json";
+    }
+    File.WriteAllText(fileName, jsonString);
+    // Console.WriteLine(File.ReadAllText(fileName));
 }
-int endDebug = 0;

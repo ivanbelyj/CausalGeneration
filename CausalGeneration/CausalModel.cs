@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CausalGeneration
@@ -11,25 +12,25 @@ namespace CausalGeneration
         /// <summary>
         /// Id корневых узлов
         /// </summary>
-        private List<Guid> _roots;
-        public List<CausalModelNode<TNodeValue>> _nodes;
+        public ISet<Guid> Roots { get; set; }
+        public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
         public CausalModelNode<TNodeValue>? FindNodeById(Guid id)
         {
-            return _nodes.FirstOrDefault(x => x.Id == id);
+            return Nodes.FirstOrDefault(x => x.Id == id);
         }
 
         // Методы для определения и построения модели
         #region ModelCreation
         public CausalModel()
         {
-            _roots = new List<Guid>();
-            _nodes = new List<CausalModelNode<TNodeValue>>();
+            Roots = new HashSet<Guid>();
+            Nodes = new List<CausalModelNode<TNodeValue>>();
         }
 
         public CausalModelNode<TNodeValue> AddNode(CausalModelNode<TNodeValue> node)
         {
-            _nodes.Add(node);
+            Nodes.Add(node);
             return node;
         }
         public CausalModelNode<TNodeValue> AddNode(CausesNest causesNest,
@@ -41,7 +42,7 @@ namespace CausalGeneration
 
         public void AddRoot(Guid id)
         {
-            _roots.Add(id);
+            Roots.Add(id);
         }
 
         public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, double probability)
@@ -72,11 +73,16 @@ namespace CausalGeneration
 
         public void Generate()
         {
-            // Подготовка. 1 этап
+            DiscardAllNotHappened();
+            DiscardGarbageNodes();
+        }
+
+        private void DiscardAllNotHappened()
+        {
             Random rnd = new Random();
-            foreach (CausalModelNode<TNodeValue> node in _nodes.Select(x => x).ToList())
+            foreach (CausalModelNode<TNodeValue> node in Nodes.Select(x => x).ToList())
             {
-                foreach (CausalModelEdge edge in node.CausesNest)
+                foreach (CausalModelEdge edge in node.CausesNest.Edges())
                 {
                     if (!edge.ActualProbability.HasValue)
                     {
@@ -100,7 +106,7 @@ namespace CausalGeneration
 
                 // Для того, что, возможно, произошло, собираются следствия
                 // для дальнейшего обхода.
-                foreach (CausalModelEdge edge in node.CausesNest)
+                foreach (CausalModelEdge edge in node.CausesNest.Edges())
                 {
                     // Если у узла есть причина, значит узел - ее следствие
                     if (edge.CauseId.HasValue)
@@ -120,25 +126,11 @@ namespace CausalGeneration
             }
         }
 
-        // Todo: IsHappened свидетельствует только о выполнении необходимого условия
-        // происшествия события.
-        // ActualProbability, строго говоря, - не вероятность
-
-        //private void DiscardAllNotHappened()
-        //{
-        //    foreach (var node in _nodes)
-        //    {
-        //        if ((!node.CausesNest.IsHappened()) ?? false)
-        //        {
-        //            DiscardNode(node);
-        //        }
-        //    }
-        //}
-
         private void DiscardNode(CausalModelNode<TNodeValue> node)
         {
             // 1. Для каждого следствия удалить node из гнезда причин,
-            // чтобы не учитывать непроизошедшее событие в сгенерированной модели
+            // чтобы не учитывать непроизошедшее событие в структуре
+            // сгенерированной модели
 
             if (node.Effects != null)
             {
@@ -151,10 +143,58 @@ namespace CausalGeneration
                 // Иначе это лист графа, он не имеет следствий
             }
 
-            // 2. По видимому, не требуется для каждой причины удалять node из Effects
+            // 2. Для каждой причины узла удалять его из Effects, чтобы
+            // в дальнейшем обходе по Effects узел не учитывался
+            foreach (CausalModelEdge edge in node.CausesNest.Edges())
+            {
+                if (edge.CauseId == null)
+                    continue;
+                var cause = FindNodeById(edge.CauseId.Value);
+                cause?.Effects?.Remove(node);
+            }
 
             // 3. Удалить из _nodes, т.к. событие больше не нужно
-            _nodes.Remove(node);
+            Nodes.Remove(node);
+
+            // 4. Если данный узел - корневой, то также удалить из корней
+            if (Roots.Contains(node.Id))
+            {
+                Roots.Remove(node.Id);
+            }
+        }
+
+        /// <summary>
+        /// Путем прохода по модели от причин к следствиям, оставляет в модели только
+        /// актуальные узлы
+        /// </summary>
+        private void DiscardGarbageNodes()
+        {
+            Nodes = ActualNodes();
+        }
+
+        private List<CausalModelNode<TNodeValue>> ActualNodes()
+        {
+            var res = new List<CausalModelNode<TNodeValue>>();
+            foreach (Guid rootId in Roots)
+            {
+                AddNodeAndEffects(res, FindNodeById(rootId));
+            }
+            return res;
+        }
+        private void AddNodeAndEffects(List<CausalModelNode<TNodeValue>> list,
+            CausalModelNode<TNodeValue>? node)
+        {
+            if (node != null)
+            {
+                if (node.Effects != null)
+                {
+                    foreach (CausalModelNode<TNodeValue> effect in node.Effects)
+                    {
+                        AddNodeAndEffects(list, effect);
+                    }
+                }
+                list.Add(node);
+            }
         }
     }
 }

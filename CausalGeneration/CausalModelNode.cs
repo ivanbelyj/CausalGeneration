@@ -46,7 +46,7 @@ namespace CausalGeneration
                 str += $"Is happened: {isHappened}\n";
 
             str += "Edges\n";
-            foreach (CausalModelEdge edge in CausesNest)
+            foreach (CausalModelEdge edge in CausesNest.Edges())
             {
                 str += $"\t{edge}\n";
             }
