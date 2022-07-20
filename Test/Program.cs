@@ -30,23 +30,26 @@ foreach (string nodeValue in new string[] { "создал 1 язык",
     model.AddNode(node);
 }
 
-//JsonSerializerOptions options = new JsonSerializerOptions() {
-//    WriteIndented = true,
-//    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-//    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
-//};
-// ToFile(model, "model");
+JsonSerializerOptions options = new JsonSerializerOptions()
+{
+    WriteIndented = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
+};
+ToFile(model, "model");
 
-// model.Generate();
+model.Generate();
 
-// ToFile(model, "generated_model");
+int endDebug = 0;
 
-var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
-deserializedModel?.Generate();
-if (deserializedModel != null)
-    ToFile(deserializedModel, "generated_model2");
+ToFile(model, "generated_model");
 
-Console.ReadKey(true);
+//var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
+//deserializedModel?.Generate();
+//if (deserializedModel != null)
+//    ToFile(deserializedModel, "generated_model2");
+
+// Console.ReadKey(true);
 
 void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {

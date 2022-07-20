@@ -1,18 +1,18 @@
 {
   "Roots": [
-    "a311abbe-f7b3-49c8-a562-8191857a57a5"
+    "3fed2a3c-5979-4fab-9f15-86551b811479"
   ],
   "Nodes": [
     {
-      "Id": "4e45c7a1-2424-4fdf-be92-25429240752a",
+      "Id": "0fe35fe2-b0ef-44fd-b146-ed56eb2c639c",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "ActualProbability": 0.228934944901363,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "ActualProbability": 0.9367507832560465,
+                "CauseId": "3fed2a3c-5979-4fab-9f15-86551b811479"
               }
             ]
           }
@@ -21,31 +21,31 @@
       "Value": "музыка"
     },
     {
-      "Id": "cdcfeba7-ca83-4578-8e3f-6858447e3eef",
+      "Id": "fe563a80-35f5-4aeb-9259-f8a8238fee49",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "ActualProbability": 0.36352554055867026,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "ActualProbability": 0.8900961725980099,
+                "CauseId": "3fed2a3c-5979-4fab-9f15-86551b811479"
               }
             ]
           }
         ]
       },
-      "Value": "программирование"
+      "Value": "писательство"
     },
     {
-      "Id": "a311abbe-f7b3-49c8-a562-8191857a57a5",
+      "Id": "3fed2a3c-5979-4fab-9f15-86551b811479",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.9,
-                "ActualProbability": 0.11221681924261628
+                "ActualProbability": 0.6184587080776835
               }
             ]
           }

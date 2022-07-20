@@ -1,10 +1,10 @@
 {
   "Roots": [
-    "a311abbe-f7b3-49c8-a562-8191857a57a5"
+    "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
   ],
   "Nodes": [
     {
-      "Id": "a311abbe-f7b3-49c8-a562-8191857a57a5",
+      "Id": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72",
       "CausesNest": {
         "Groups": [
           {
@@ -19,14 +19,14 @@
       "Value": "Хобби"
     },
     {
-      "Id": "68418de8-0349-469f-b6cb-08f75b8aca9a",
+      "Id": "69853819-e0c4-47c4-81a7-124ee17124c0",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -35,14 +35,14 @@
       "Value": "рисование"
     },
     {
-      "Id": "4e45c7a1-2424-4fdf-be92-25429240752a",
+      "Id": "e4a5e2a6-9fe6-428d-abb0-7515fcd7df5b",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -51,14 +51,14 @@
       "Value": "музыка"
     },
     {
-      "Id": "8aaee71c-71fe-4f5e-9824-9e06989b8735",
+      "Id": "30491716-00f7-4887-8a77-7b693fb64ca1",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -67,14 +67,14 @@
       "Value": "ворлдбилдинг"
     },
     {
-      "Id": "cdcfeba7-ca83-4578-8e3f-6858447e3eef",
+      "Id": "13772798-8a24-4694-a4c9-fea4771f8487",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -83,14 +83,14 @@
       "Value": "программирование"
     },
     {
-      "Id": "3ff317f9-403f-4872-9f7c-4c002adcfeb0",
+      "Id": "a348fa5e-e25c-4134-8708-7868578d09dc",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.5,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -99,14 +99,14 @@
       "Value": "писательство"
     },
     {
-      "Id": "6e9a5e03-a2b1-4f1d-ac24-fd1c7fc3dc66",
+      "Id": "d0e8b091-be64-4d07-8f5a-685845d9550b",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.3,
-                "CauseId": "a311abbe-f7b3-49c8-a562-8191857a57a5"
+                "CauseId": "dcbc2f9d-bb25-4ad2-988d-c3bb170f2b72"
               }
             ]
           }
@@ -115,14 +115,14 @@
       "Value": "Создание языков"
     },
     {
-      "Id": "1620d12a-1cb8-43a0-9719-4c1f60709529",
+      "Id": "1508a8be-197f-4392-9d05-1594993c72bc",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.7,
-                "CauseId": "6e9a5e03-a2b1-4f1d-ac24-fd1c7fc3dc66"
+                "CauseId": "d0e8b091-be64-4d07-8f5a-685845d9550b"
               }
             ]
           }
@@ -131,14 +131,14 @@
       "Value": "создал 1 язык"
     },
     {
-      "Id": "0d086cd3-6b35-41d6-91d6-0e674e379d61",
+      "Id": "154739a7-6e06-40b8-a988-074233355588",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.7,
-                "CauseId": "6e9a5e03-a2b1-4f1d-ac24-fd1c7fc3dc66"
+                "CauseId": "d0e8b091-be64-4d07-8f5a-685845d9550b"
               }
             ]
           }
@@ -147,14 +147,14 @@
       "Value": "разбирается в лингвистике"
     },
     {
-      "Id": "c7c6e8fa-5763-4bc3-8357-17b8d65ffb8d",
+      "Id": "28923083-b994-419c-8dfb-af63218e2341",
       "CausesNest": {
         "Groups": [
           {
             "Edges": [
               {
                 "Probability": 0.7,
-                "CauseId": "6e9a5e03-a2b1-4f1d-ac24-fd1c7fc3dc66"
+                "CauseId": "d0e8b091-be64-4d07-8f5a-685845d9550b"
               }
             ]
           }

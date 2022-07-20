@@ -23,41 +23,15 @@ namespace CausalGeneration
 
             /// <summary>
             /// Todo: IsHappened свидетельствует только о выполнении необходимого условия
-            /// происшествия события.
+            /// происшествия события
             /// </summary>
             public bool? IsHappened()
             {
-                double? actualTotalP = GetTotalActualProbability();
-                double totalP = GetTotalProbability();
-                if (!actualTotalP.HasValue)
+                double? actualTotalP = CausalModelEdge.GetTotalActualProbability(Edges);
+                double? totalP = CausalModelEdge.GetTotalProbability(Edges);
+                if (!actualTotalP.HasValue || !totalP.HasValue)
                     return null;
-                return (totalP - actualTotalP.Value) > 0;
-            }
-
-            public double GetTotalProbability() => GetTotalProduct(edge => edge.Probability);
-
-            public double? GetTotalActualProbability()
-            {
-                // Если хотя бы одна фактическая вероятность не определена
-                if (Edges.Any(cause => !cause.ActualProbability.HasValue))
-                {
-                    return null;
-                }
-#pragma warning disable CS8629  // Nullable value type may be null.
-                return GetTotalProduct(edge => edge.ActualProbability.Value);
-#pragma warning restore CS8629  // Nullable value type may be null.
-            }
-
-            private double GetTotalProduct(Func<CausalModelEdge, double> getProperty)
-            {
-                double res = 1;
-                foreach (CausalModelEdge edge in Edges)
-                {
-                    if (Math.Abs(getProperty(edge)) < double.Epsilon)
-                        return 0;
-                    res *= getProperty(edge);
-                }
-                return res;
+                return CausalModelEdge.IsActuallyHappened(totalP, actualTotalP);
             }
         }
 
@@ -78,11 +52,7 @@ namespace CausalGeneration
 
         public CausesNest(Guid? causeId, double probability)
         {
-            CausalModelEdge edge = new CausalModelEdge()
-            {
-                Probability = probability,
-                CauseId = causeId
-            };
+            CausalModelEdge edge = new CausalModelEdge(probability, causeId);
             CausalModelEdge[] edgesArr = new CausalModelEdge[] { edge };
             Groups = new CausesGroup[] { new CausesGroup(edgesArr) };
         }

@@ -107,11 +107,11 @@ namespace CausalGeneration
             {
                 foreach (CausalModelEdge edge in node.CausesNest.Edges())
                 {
-                    if (!edge.ActualProbability.HasValue)
+                    if (edge is CausalModelEdge probEdge
+                        && !edge.ActualProbability.HasValue)
                     {
-                        edge.ActualProbability = rnd.NextDouble();
+                        probEdge.ActualProbability = rnd.NextDouble();
                     }
-
                 }
                 // Можно вызывать IsHappened
                 bool? isHappened = node.CausesNest.IsHappened();
