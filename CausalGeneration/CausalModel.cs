@@ -18,10 +18,16 @@ namespace CausalGeneration
         public ISet<Guid> Roots { get; set; }
         public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
+        public List<NodesGroup<TNodeValue>> Groups { get; set; }
+
         public CausalModelNode<TNodeValue>? FindNodeById(Guid id)
-        {
-            return Nodes.FirstOrDefault(x => x.Id == id);
-        }
+            => Nodes.FirstOrDefault(x => x.Id == id);
+
+        public NodesGroup<TNodeValue>? FindGroupById(Guid id)
+            => Groups.FirstOrDefault(x => x.Id == id);
+
+        public List<CausalModelNode<TNodeValue>> FindAllNodesOfGroup(Guid groupId)
+            => Nodes.FindAll(node => node.GroupId == groupId);
 
         // Методы для определения и построения модели
         #region ModelCreation
@@ -29,6 +35,7 @@ namespace CausalGeneration
         {
             Roots = new HashSet<Guid>();
             Nodes = new List<CausalModelNode<TNodeValue>>();
+            Groups = new List<NodesGroup<TNodeValue>>();
         }
 
         public CausalModelNode<TNodeValue> AddNode(CausalModelNode<TNodeValue> node)
@@ -94,10 +101,37 @@ namespace CausalGeneration
         }
         #endregion
 
-        public void Generate()
+        public ValidationResult Generate()
         {
+            ValidationResult res = ValidateModel();
+            if (!res.Succeeded)
+                return res;
             DiscardAllNotHappened();
             DiscardGarbageNodes();
+            ApplyGroupsRules();
+            return ValidationResult.Success;
+        }
+
+        private ValidationResult ValidateModel() => ValidateGroups();
+
+        private ValidationResult ValidateGroups()
+        {
+            foreach (NodesGroup<TNodeValue> group in Groups)
+            {
+                ValidationResult res =
+                    group.ValidateNodes(FindAllNodesOfGroup(group.Id));
+                if (!res.Succeeded)
+                    return res;
+            }
+            return ValidationResult.Success;
+        }
+
+        private void ApplyGroupsRules()
+        {
+            foreach (var group in Groups)
+            {
+                group.ApplyGroupRules(FindAllNodesOfGroup(group.Id));
+            }
         }
 
         private void DiscardAllNotHappened()

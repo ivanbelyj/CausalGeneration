@@ -41,6 +41,11 @@ namespace CausalGeneration
         /// </summary>
         internal List<CausalModelNode<TNodeValue>>? Effects { get; set; } = null;
 
+        /// <summary>
+        /// null, если узел не относится к группе
+        /// </summary>
+        public Guid? GroupId { get; set; }
+
         public override string ToString()
         {
             string str = $"Node {Id}\n";
@@ -56,6 +61,11 @@ namespace CausalGeneration
                 str += $"\t{edge}\n";
             }
             return str;
+        }
+
+        public void AddToGroup(NodesGroup<TNodeValue> group)
+        {
+            GroupId = group.Id;
         }
     }
 }
