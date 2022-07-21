@@ -56,8 +56,6 @@ ToFile(model, "model");
 
 model.Generate();
 
-int endDebug = 0;
-
 ToFile(model, "generated_model");
 
 //var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
@@ -65,7 +63,8 @@ ToFile(model, "generated_model");
 //if (deserializedModel != null)
 //    ToFile(deserializedModel, "generated_model2");
 
-Console.ReadKey(true);
+// Console.ReadKey(true);
+int endDebug = 0;
 
 void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {

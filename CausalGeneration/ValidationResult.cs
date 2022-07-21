@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    // Todo: Можно добавить коды ошибок
     public class ValidationResult
     {
         public IEnumerable<CausalModelError>? Errors { get; set; }

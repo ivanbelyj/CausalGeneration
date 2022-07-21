@@ -21,10 +21,6 @@ namespace CausalGeneration
 
             public List<CausalModelEdge> Edges { get; set; }
 
-            /// <summary>
-            /// Todo: IsHappened свидетельствует только о выполнении необходимого условия
-            /// происшествия события
-            /// </summary>
             public bool? IsHappened()
             {
                 double? actualTotalP = CausalModelEdge.GetTotalActualProbability(Edges);
@@ -102,6 +98,13 @@ namespace CausalGeneration
                     yield return edge;
                 }
             }
+        }
+
+        public CausalModelEdge SingleEdge()
+        {
+            if (Groups.Length != 1 || Groups[0].Edges.Count != 1)
+                throw new InvalidOperationException("Гнездо причин имеет не единственную причину");
+            return Groups[0].Edges[0];
         }
     }
     

@@ -10,12 +10,15 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    public class CausalModel<TNodeValue>  // : IEnumerable<TNodeValue>
+    public class CausalModel<TNodeValue>
     {
         /// <summary>
         /// Id корневых узлов
         /// </summary>
-        public ISet<Guid> Roots { get; set; }
+        public ISet<Guid> Roots { get; set; } 
+        // Todo: динамическое определение корней (узлы без причин перед генерацией)
+
+        // Структура класса во многом обусловлена необходимостью представления в Json
         public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
         public List<NodesGroup<TNodeValue>> Groups { get; set; }
@@ -87,7 +90,6 @@ namespace CausalGeneration
             return JsonSerializer.Serialize(this, options);
         }
 
-        // Todo: Какой тип модели?
         public static CausalModel<TNodeValue>? FromJson(string jsonString)
         {
             JsonSerializerOptions options = new JsonSerializerOptions()
@@ -106,63 +108,89 @@ namespace CausalGeneration
             ValidationResult res = ValidateModel();
             if (!res.Succeeded)
                 return res;
-            DiscardAllNotHappened();
+
+            GenerationTrace();
             DiscardGarbageNodes();
-            ApplyGroupsRules();
+            
             return ValidationResult.Success;
         }
 
-        private ValidationResult ValidateModel() => ValidateGroups();
+        #region GroupsAndValidation
+        public ValidationResult ValidateModel()
+        {
+            return ValidateGroups();
+        }
 
         private ValidationResult ValidateGroups()
         {
             foreach (NodesGroup<TNodeValue> group in Groups)
             {
-                ValidationResult res =
-                    group.ValidateNodes(FindAllNodesOfGroup(group.Id));
+                ValidationResult res = group.ValidateNodes();
                 if (!res.Succeeded)
                     return res;
             }
             return ValidationResult.Success;
         }
+        
+        #endregion
 
-        private void ApplyGroupsRules()
+        #region Generation
+
+        private void DefineNode(CausalModelNode<TNodeValue> node)
         {
-            foreach (var group in Groups)
+            Random rnd = new Random();
+
+            // Определить вероятности
+            foreach (CausalModelEdge edge in node.CausesNest.Edges())
             {
-                group.ApplyGroupRules(FindAllNodesOfGroup(group.Id));
+                // Если не определена актуальная вероятность причинной связи
+                if (edge.ActualProbability == null)
+                {
+                    edge.ActualProbability = rnd.NextDouble();
+                }
             }
         }
 
-        private void DiscardAllNotHappened()
+        private void GenerationTrace()
         {
-            Random rnd = new Random();
-            foreach (CausalModelNode<TNodeValue> node in Nodes.Select(x => x).ToList())
+            // Определить узлы групп
+            foreach (NodesGroup<TNodeValue> group in Groups)
             {
-                foreach (CausalModelEdge edge in node.CausesNest.Edges())
+                group.Define();
+            }
+
+            foreach (CausalModelNode<TNodeValue> node in Nodes.ToList())
+            {
+                // Определить узел, чтобы в дальнейшем узнать, произошло ли событие
+                if (node.GroupId == null)
+                    DefineNode(node);
+
+                // Отбрасывание непроизошедшего события
+                bool shouldBeDeleted;
+
+                // Некоторые группы переопределяют правила удаления
+                if (node.GroupId != null)
                 {
-                    if (edge is CausalModelEdge probEdge
-                        && !edge.ActualProbability.HasValue)
-                    {
-                        probEdge.ActualProbability = rnd.NextDouble();
-                    }
-                }
-                // Можно вызывать IsHappened
-                bool? isHappened = node.CausesNest.IsHappened();
-                // Если такое вообще возможно
-                if (!isHappened.HasValue)
+                    NodesGroup<TNodeValue>? group = FindGroupById(node.GroupId.Value);
+                    if (group == null)
+                        throw new Exception("Некорректный Id группы у узла");
+                    shouldBeDeleted = group.ShouldBeDiscarded(node);
+                } else
                 {
-                    throw new Exception("Ошибка на этапе отбрасывания непроизошедшего." +
-                        " Не определено, произошло ли событие.");
+                    bool? isHappened = node.CausesNest.IsHappened();
+                    if (!isHappened.HasValue)
+                        throw new Exception("Причинные связи узла не определены");
+                    shouldBeDeleted = !isHappened.Value;
                 }
-                if (!isHappened.Value)
+                
+                if (shouldBeDeleted)
                 {
                     DiscardNode(node);
                     continue;
                 }
 
-                // Для того, что, возможно, произошло, собираются следствия
-                // для дальнейшего обхода.
+                // Для произошедших событий собираются следствия для включения в финальный
+                // набор узлов
                 foreach (CausalModelEdge edge in node.CausesNest.Edges())
                 {
                     // Если у узла есть причина, значит узел - ее следствие
@@ -183,7 +211,7 @@ namespace CausalGeneration
             }
         }
 
-        private void DiscardNode(CausalModelNode<TNodeValue> node)
+        internal void DiscardNode(CausalModelNode<TNodeValue> node)
         {
             // 1. Для каждого следствия удалить node из гнезда причин,
             // чтобы не учитывать непроизошедшее событие в структуре
@@ -254,5 +282,6 @@ namespace CausalGeneration
                 list.Add(node);
             }
         }
+        #endregion
     }
 }
