@@ -1,33 +1,33 @@
-﻿using System;
-using System.Collections;
+﻿using CausalGeneration.Edges;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CausalGeneration
+namespace CausalGeneration.Nests
 {
-    public class CausesNest
+    public class CausesNest : EdgesNest
     {
         public class CausesGroup
         {
-            public CausesGroup(CausalModelEdge[] edges)
+            public CausesGroup(CausalEdge[] edges)
             {
                 Edges = edges.ToList();
             }
 
             // Для десериализации json
-            public CausesGroup() : this(new CausalModelEdge[] { }) { }
+            public CausesGroup() : this(new CausalEdge[] { }) { }
 
-            public List<CausalModelEdge> Edges { get; set; }
+            public List<CausalEdge> Edges { get; set; }
 
             public bool? IsHappened()
             {
-                double? actualTotalP = CausalModelEdge.GetTotalActualProbability(Edges);
-                double? totalP = CausalModelEdge.GetTotalProbability(Edges);
+                double? actualTotalP = CausalEdge.GetTotalActualProbability(Edges);
+                double? totalP = CausalEdge.GetTotalProbability(Edges);
                 if (!actualTotalP.HasValue || !totalP.HasValue)
                     return null;
-                return CausalModelEdge.IsActuallyHappened(totalP, actualTotalP);
+                return CausalEdge.IsActuallyHappened(totalP, actualTotalP);
             }
         }
 
@@ -38,7 +38,7 @@ namespace CausalGeneration
             Groups = groups;
         }
 
-        public CausesNest(params CausalModelEdge[] edges)
+        public CausesNest(params CausalEdge[] edges)
         {
             Groups = new CausesGroup[] { new CausesGroup(edges) };
         }
@@ -48,8 +48,8 @@ namespace CausalGeneration
 
         public CausesNest(Guid? causeId, double probability)
         {
-            CausalModelEdge edge = new CausalModelEdge(probability, causeId);
-            CausalModelEdge[] edgesArr = new CausalModelEdge[] { edge };
+            CausalEdge edge = new CausalEdge(probability, causeId);
+            CausalEdge[] edgesArr = new CausalEdge[] { edge };
             Groups = new CausesGroup[] { new CausesGroup(edgesArr) };
         }
 
@@ -74,11 +74,11 @@ namespace CausalGeneration
         /// <summary>
         /// Используется на 2-м этапе генерации
         /// </summary>
-        public void DiscardCause(Guid causeId)
+        public override void DiscardCause(Guid causeId)
         {
             foreach (CausesGroup group in Groups)
             {
-                foreach (CausalModelEdge edge in group.Edges)
+                foreach (CausalEdge edge in group.Edges)
                 {
                     if (edge.CauseId == causeId)
                     {
@@ -89,23 +89,22 @@ namespace CausalGeneration
             }
         }
 
-        public IEnumerable<CausalModelEdge> Edges()
+        public override IEnumerable<Edge> Edges()
         {
             foreach (CausesGroup group in Groups)
             {
-                foreach (CausalModelEdge edge in group.Edges)
+                foreach (CausalEdge edge in group.Edges)
                 {
                     yield return edge;
                 }
             }
         }
 
-        public CausalModelEdge SingleEdge()
+        /*public Edge SingleEdge()
         {
             if (Groups.Length != 1 || Groups[0].Edges.Count != 1)
                 throw new InvalidOperationException("Гнездо причин имеет не единственную причину");
             return Groups[0].Edges[0];
-        }
+        }*/
     }
-    
 }

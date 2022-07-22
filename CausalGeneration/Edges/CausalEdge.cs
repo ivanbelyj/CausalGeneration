@@ -4,15 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CausalGeneration
+namespace CausalGeneration.Edges
 {
-    public class CausalModelEdge
+    public class CausalEdge : Edge
     {
-        // Todo: !!!Создать базовый класс Edge, отвечающий за связи в модели,
-        // содержит только CauseId.
-        // Его подклассы - ProbabilityEdge и ImplementationEdge будут отвечать
-        // за смысл самой связи.
-
         /// <summary>
         /// Вероятность того, что причинно-следственная связь повлечет за собой событие.
         /// <br/>
@@ -31,31 +26,24 @@ namespace CausalGeneration
         /// </summary>
         virtual public double? ActualProbability { get; set; }
 
-        /// <summary>
-        /// Guid вершины, представляющей причину. <br/>
-        /// null для корневых узлов
-        /// </summary>
-        virtual public Guid? CauseId { get; }
-
-        public CausalModelEdge(double? probability = null, Guid? causeId = null,
-            double? actualProbability = null)
+        public CausalEdge(double? probability = null, Guid? causeId = null,
+            double? actualProbability = null) : base(causeId)
         {
             Probability = probability;
-            CauseId = causeId;
             ActualProbability = actualProbability;
         }
 
-        public static double? GetTotalProbability(IEnumerable<CausalModelEdge> edges)
+        public static double? GetTotalProbability(IEnumerable<CausalEdge> edges)
             => GetTotalProduct(edges, edge => edge.Probability);
 
-        public static double? GetTotalActualProbability(IEnumerable<CausalModelEdge>
+        public static double? GetTotalActualProbability(IEnumerable<CausalEdge>
             edges) => GetTotalProduct(edges, edge => edge.ActualProbability);
 
-        private static double? GetTotalProduct(IEnumerable<CausalModelEdge> edges,
-            Func<CausalModelEdge, double?> getProperty)
+        private static double? GetTotalProduct(IEnumerable<CausalEdge> edges,
+            Func<CausalEdge, double?> getProperty)
         {
             double res = 1;
-            foreach (CausalModelEdge edge in edges)
+            foreach (CausalEdge edge in edges)
             {
                 double? prop = getProperty(edge);
                 if (!prop.HasValue)

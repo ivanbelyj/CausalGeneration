@@ -3,9 +3,13 @@ using System.Text.Json.Serialization;
 using CausalGeneration;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using CausalGeneration.Nests;
+using CausalGeneration.Groups;
 
 CausalModel<string> model = new CausalModel<string>();
-CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0.9);
+// CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0.9);
+CausalModelNode<string> hobbyRoot = model.AddNode(new CausesNest(null, 0.9), "Хобби");
+model.AddRoot(hobbyRoot.Id);
 
 foreach (string hobbyName in new string[] { "рисование",
     "музыка", "ворлдбилдинг", "программирование",
@@ -34,7 +38,10 @@ foreach (string nodeValue in new string[] { "создал 1 язык",
 
 // Раса напрямую связана с бытием существа,
 // представляет собой абстрактную сущность, реализуемую конкретным вариантом
-CausalModelNode<string> raceRoot = model.AddRootNode("Раса", 1);
+// CausalModelNode<string> raceRoot = model.AddRootNode("Раса", 1);
+CausalModelNode<string> raceRoot = model.AddNode(new CausesNest(null, 1), "Раса");
+model.AddRoot(raceRoot.Id);
+
 NodesGroup<string> raceGroup = new VariantsGroup<string>(raceRoot.Id, model);
 model.Groups.Add(raceGroup);
 foreach (string nodeValue in new string[] { "тшэайская", "мэрайская",
@@ -43,7 +50,7 @@ foreach (string nodeValue in new string[] { "тшэайская", "мэрайс�
     var node =
         new CausalModelNode<string>(new CausesNest(raceRoot.Id, 1), nodeValue);
     model.AddNode(node);
-    node.AddToGroup(raceGroup);
+    node.GroupId = raceGroup.Id;
 }
 
 JsonSerializerOptions options = new JsonSerializerOptions()

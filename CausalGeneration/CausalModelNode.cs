@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CausalGeneration.Edges;
+using CausalGeneration.Nests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,25 +10,20 @@ namespace CausalGeneration
 {
     public class CausalModelNode<TNodeValue>
     {
-        public CausalModelNode(Guid id, CausesNest causesNest,
+        public CausalModelNode(Guid id, EdgesNest causesNest,
             TNodeValue? value = default(TNodeValue))
         {
             CausesNest = causesNest;
             Id = id;
             Value = value;
         }
-        public CausalModelNode(CausesNest causesNest,
+        public CausalModelNode(EdgesNest causesNest,
             TNodeValue? value = default(TNodeValue))
                 : this(Guid.NewGuid(), causesNest, value) { }
-        public CausalModelNode()
-        {
-            CausesNest = new CausesNest();
-        }
         
-
         public Guid Id { get; set; }
 
-        public CausesNest CausesNest { get; set; }
+        public EdgesNest CausesNest { get; set; }
 
         // public Guid GroupId { get; set; }
 
@@ -51,21 +48,23 @@ namespace CausalGeneration
             string str = $"Node {Id}\n";
             str += Value?.ToString() + "\n";
 
-            bool? isHappened = CausesNest.IsHappened();
-            if (isHappened.HasValue)
-                str += $"Is happened: {isHappened}\n";
-
+            if (CausesNest is CausesNest causal)
+            {
+                bool? isHappened = causal.IsHappened();
+                if (isHappened.HasValue)
+                    str += $"Is happened: {isHappened}\n";
+            }
             str += "Edges\n";
-            foreach (CausalModelEdge edge in CausesNest.Edges())
+            foreach (Edge edge in CausesNest.Edges())
             {
                 str += $"\t{edge}\n";
             }
             return str;
         }
 
-        public void AddToGroup(NodesGroup<TNodeValue> group)
+        /*public void AddToGroup(NodesGroup<TNodeValue> group)
         {
             GroupId = group.Id;
-        }
+        }*/
     }
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CausalGeneration.Edges;
+using CausalGeneration.Groups;
+using CausalGeneration.Nests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +49,7 @@ namespace CausalGeneration
             Nodes.Add(node);
             return node;
         }
-        public CausalModelNode<TNodeValue> AddNode(CausesNest causesNest,
+        public CausalModelNode<TNodeValue> AddNode(EdgesNest causesNest,
             TNodeValue? value = default(TNodeValue))
         {
             var node = new CausalModelNode<TNodeValue>(causesNest, value);
@@ -58,12 +61,12 @@ namespace CausalGeneration
             Roots.Add(id);
         }
 
-        public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, double probability)
+        /* public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, double probability)
         {
-            var node = AddNode(new CausesNest(null, probability), value);
+            var node = AddNode(new EdgesNest(null, probability), value);
             AddRoot(node.Id);
             return node;
-        }
+        }*/
 
         #endregion
 
@@ -140,15 +143,19 @@ namespace CausalGeneration
         {
             Random rnd = new Random();
 
-            // Определить вероятности
-            foreach (CausalModelEdge edge in node.CausesNest.Edges())
+            if (node.CausesNest is CausesNest nest)
             {
-                // Если не определена актуальная вероятность причинной связи
-                if (edge.ActualProbability == null)
+                // Определить вероятности
+                foreach (CausalEdge edge in nest.Edges())
                 {
-                    edge.ActualProbability = rnd.NextDouble();
+                    // Если не определена актуальная вероятность причинной связи
+                    if (edge.ActualProbability == null)
+                    {
+                        edge.ActualProbability = rnd.NextDouble();
+                    }
                 }
             }
+            
         }
 
         private void GenerationTrace()
@@ -175,12 +182,15 @@ namespace CausalGeneration
                     if (group == null)
                         throw new Exception("Некорректный Id группы у узла");
                     shouldBeDeleted = group.ShouldBeDiscarded(node);
-                } else
+                } else if (node.CausesNest is CausesNest nest)
                 {
-                    bool? isHappened = node.CausesNest.IsHappened();
+                    bool? isHappened = nest.IsHappened();
                     if (!isHappened.HasValue)
                         throw new Exception("Причинные связи узла не определены");
                     shouldBeDeleted = !isHappened.Value;
+                } else
+                {
+                    throw new Exception("Узел имеет нестандартное гнездо связей, не находясь в группе");
                 }
                 
                 if (shouldBeDeleted)
@@ -191,7 +201,7 @@ namespace CausalGeneration
 
                 // Для произошедших событий собираются следствия для включения в финальный
                 // набор узлов
-                foreach (CausalModelEdge edge in node.CausesNest.Edges())
+                foreach (Edge edge in node.CausesNest.Edges())
                 {
                     // Если у узла есть причина, значит узел - ее следствие
                     if (edge.CauseId.HasValue)
@@ -231,7 +241,7 @@ namespace CausalGeneration
 
             // 2. Для каждой причины узла удалять его из Effects, чтобы
             // в дальнейшем обходе по Effects узел не учитывался
-            foreach (CausalModelEdge edge in node.CausesNest.Edges())
+            foreach (Edge edge in node.CausesNest.Edges())
             {
                 if (edge.CauseId == null)
                     continue;
