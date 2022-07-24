@@ -10,7 +10,6 @@ using CausalGeneration.Edges;
 CausalModel<string> model = new CausalModel<string>();
 // CausalModelNode<string> hobbyRoot = model.AddRootNode("Хобби", 0.9);
 CausalModelNode<string> hobbyRoot = model.AddNode(new CausesNest(null, 0.9), "Хобби");
-model.AddRoot(hobbyRoot.Id);
 
 foreach (string hobbyName in new string[] { "рисование",
     "музыка", "ворлдбилдинг", "программирование",
@@ -40,7 +39,6 @@ foreach (string nodeValue in new string[] { "создал 1 язык",
 // Раса напрямую связана с бытием существа,
 // представляет собой абстрактную сущность, реализуемую конкретным вариантом
 CausalModelNode<string> raceNode = new CausalModelNode<string>(new CausesNest(null, 1), "Раса");
-model.AddRoot(raceNode.Id);
 model.AddVariantsGroup(raceNode, "тшэайская", "мэрайская", "мйеурийская", "эвойская");
 
 JsonSerializerOptions options = new JsonSerializerOptions()

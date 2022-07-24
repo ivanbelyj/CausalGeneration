@@ -71,9 +71,6 @@ namespace CausalGeneration.Nests
             return false;
         }
 
-        /// <summary>
-        /// Используется на 2-м этапе генерации
-        /// </summary>
         public override void DiscardCause(Guid causeId)
         {
             foreach (CausesGroup group in Groups)
@@ -99,12 +96,5 @@ namespace CausalGeneration.Nests
                 }
             }
         }
-
-        /*public Edge SingleEdge()
-        {
-            if (Groups.Length != 1 || Groups[0].Edges.Count != 1)
-                throw new InvalidOperationException("Гнездо причин имеет не единственную причину");
-            return Groups[0].Edges[0];
-        }*/
     }
 }

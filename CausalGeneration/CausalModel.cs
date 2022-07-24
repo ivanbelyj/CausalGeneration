@@ -16,9 +16,9 @@ namespace CausalGeneration
     public class CausalModel<TNodeValue>
     {
         /// <summary>
-        /// Id корневых узлов
+        /// Корневые узлы требуются на этапе отбрасывания "мусорных" узлов
         /// </summary>
-        public ISet<Guid> Roots { get; set; }
+        private ISet<CausalModelNode<TNodeValue>> _roots;
         // Todo: динамическое определение корней (узлы без причин перед генерацией)
 
         // Структура класса во многом обусловлена необходимостью представления в Json
@@ -42,7 +42,7 @@ namespace CausalGeneration
         #region ModelCreation
         public CausalModel()
         {
-            Roots = new HashSet<Guid>();
+            _roots = new HashSet<CausalModelNode<TNodeValue>>();
             Nodes = new List<CausalModelNode<TNodeValue>>();
             Groups = new List<NodesGroup<TNodeValue>>();
         }
@@ -57,11 +57,6 @@ namespace CausalGeneration
         {
             var node = new CausalModelNode<TNodeValue>(causesNest, value);
             return AddNode(node);
-        }
-
-        public void AddRoot(Guid id)
-        {
-            Roots.Add(id);
         }
 
         public void AddVariantsGroup(CausalModelNode<TNodeValue> abstractNode,
@@ -79,37 +74,10 @@ namespace CausalGeneration
                 AddNode(node);
             }
         }
-
-        /// <summary>
-        /// Создает группу из абстрактной сущности и ее реализаций
-        /// </summary>
-        /// <param name="abstractNode"></param>
-        /// <param name="implementationVariants"></param>
-        //public void AddVariantsGroupOld(CausalModelNode<TNodeValue> abstractNode,
-        //    params CausalModelNode<TNodeValue>[] implementationVariants)
-        //{
-        //    VariantsGroup<TNodeValue> group = new VariantsGroup<TNodeValue>(abstractNode.Id, this);
-        //    Groups.Add(group);
-        //    foreach (var node in implementationVariants)
-        //    {
-        //        AddNode(node);
-        //    }
-        //}
-
-        /// <summary>
-        /// Создает узел, реализующий абстрактную сущность
-        /// </summary>
-        //public CausalModelNode<TNodeValue> CreateImplementationNode(
-        //    double weight, CausalModelNode<TNodeValue> abstractNode, TNodeValue nodeValue)
-        //{
-        //    var implementationNest = new ImplementationNest(
-        //        new ImplementationEdge(weight, abstractNode.Id));
-        //    var node = new CausalModelNode<TNodeValue>(implementationNest, nodeValue);
-        //    return node;
-        //}
-
         #endregion
 
+        // Todo: Десериализация
+        // Todo: Баг с сериализацией - CausesNest в CausalModel не сериализуется
         #region Json
         public async Task ToJsonAsync(Stream stream, bool writeIndented = false)
         {
@@ -146,7 +114,7 @@ namespace CausalGeneration
         }
         #endregion
 
-        // Todo: сделать валидацию
+        // Todo: Полная валидация
         #region Validation
         public ValidationResult ValidateModel()
         {
@@ -165,7 +133,6 @@ namespace CausalGeneration
         }
 
         #endregion
-
         #region Generation
 
         public ValidationResult Generate()
@@ -174,10 +141,20 @@ namespace CausalGeneration
             if (!res.Succeeded)
                 return res;
 
+            DefineRoots();
             GenerationTrace();
             DiscardGarbageNodes();
 
             return ValidationResult.Success;
+        }
+
+        private void DefineRoots()
+        {
+            foreach (CausalModelNode<TNodeValue> node in Nodes)
+            {
+                if (node.CausesNest.IsRootNest())
+                    _roots.Add(node);
+            }
         }
 
         private void GenerationTrace()
@@ -296,9 +273,9 @@ namespace CausalGeneration
             Nodes.Remove(node);
 
             // 4. Если данный узел - корневой, то также удалить из корней
-            if (Roots.Contains(node.Id))
+            if (_roots.Contains(node))
             {
-                Roots.Remove(node.Id);
+                _roots.Remove(node);
             }
         }
 
@@ -314,9 +291,9 @@ namespace CausalGeneration
         private List<CausalModelNode<TNodeValue>> ActualNodes()
         {
             var res = new List<CausalModelNode<TNodeValue>>();
-            foreach (Guid rootId in Roots)
+            foreach (CausalModelNode<TNodeValue> root in _roots)
             {
-                AddNodeAndEffects(res, FindNodeById(rootId));
+                AddNodeAndEffects(res, root);
             }
             return res;
         }

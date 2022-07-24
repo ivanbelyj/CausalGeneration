@@ -1,92 +1,88 @@
 {
-  "Roots": [
-    "09defa8d-e472-4f78-8668-d1d93bdf5110",
-    "580caa3e-5dda-42c3-a8a4-006d7a9a0d0e"
-  ],
   "Nodes": [
     {
-      "Id": "09defa8d-e472-4f78-8668-d1d93bdf5110",
+      "Id": "93497f8b-dc9b-4c3e-80ac-7ab38535e55e",
       "CausesNest": {},
       "Value": "Хобби"
     },
     {
-      "Id": "f7e2856a-992b-4490-a814-f62b8d9d05b6",
+      "Id": "5afbe73d-fee2-41ac-ae46-be68eea20663",
       "CausesNest": {},
       "Value": "рисование"
     },
     {
-      "Id": "f1b1b07b-155b-4467-8901-14e30aec1e85",
+      "Id": "64deb9e1-41bf-446b-bf50-43813c7125c9",
       "CausesNest": {},
       "Value": "музыка"
     },
     {
-      "Id": "b9b86d98-4677-467d-a618-6bdee9d95244",
+      "Id": "ac924fad-b929-44b1-9585-af079599b715",
       "CausesNest": {},
       "Value": "ворлдбилдинг"
     },
     {
-      "Id": "49c77c89-66a0-47a0-bc2a-65bf82fd64d8",
+      "Id": "9837b8cc-940b-47a0-bd03-245ae7e2064b",
       "CausesNest": {},
       "Value": "программирование"
     },
     {
-      "Id": "47254f61-5a72-422f-8537-d5dd32d72624",
+      "Id": "192c4f17-c506-4a07-816a-a42c2f2a8c6e",
       "CausesNest": {},
       "Value": "писательство"
     },
     {
-      "Id": "8ce34e69-e23e-4c2b-978e-81a2822392ea",
+      "Id": "16242db6-31d9-45b1-8627-d160f5869839",
       "CausesNest": {},
       "Value": "Создание языков"
     },
     {
-      "Id": "69439854-5ab5-49be-8709-a65e0efc2a77",
+      "Id": "b55f97d6-8b22-4214-b6c3-ea0a3482693f",
       "CausesNest": {},
       "Value": "создал 1 язык"
     },
     {
-      "Id": "6bbeb355-ff9d-4017-8d6e-add1b7bebcfb",
+      "Id": "bbd5186f-bddb-4b73-b827-e4a7b6dde643",
       "CausesNest": {},
       "Value": "разбирается в лингвистике"
     },
     {
-      "Id": "8dd48dab-0108-4459-a6e7-a4b43bec5602",
+      "Id": "95a45845-882e-4694-93ee-fae2c37944f9",
       "CausesNest": {},
       "Value": "говорит на нескольких языках"
     },
     {
-      "Id": "580caa3e-5dda-42c3-a8a4-006d7a9a0d0e",
+      "Id": "ce978e03-7715-4eb4-9c34-f4c0c761350a",
       "CausesNest": {},
       "Value": "Раса"
     },
     {
-      "Id": "ec064cdb-b187-4a48-a953-268842dabce6",
+      "Id": "3f5afa5c-02f8-4be8-8c79-e3def6db5cdb",
       "CausesNest": {},
       "Value": "тшэайская",
-      "GroupId": "2219b97f-718b-4941-a71c-9799c16439da"
+      "GroupId": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     },
     {
-      "Id": "fad9680d-80d9-4813-8214-1931d2b5b958",
+      "Id": "bc3ba94b-c685-4948-92b2-549809814549",
       "CausesNest": {},
       "Value": "мэрайская",
-      "GroupId": "2219b97f-718b-4941-a71c-9799c16439da"
+      "GroupId": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     },
     {
-      "Id": "995ae41f-c384-498b-88fb-8285795431c6",
+      "Id": "d4940bd7-76b1-48df-9161-79d53f7b2a8f",
       "CausesNest": {},
       "Value": "мйеурийская",
-      "GroupId": "2219b97f-718b-4941-a71c-9799c16439da"
+      "GroupId": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     },
     {
-      "Id": "121df462-1261-4430-975e-e87ddffc8b9c",
+      "Id": "f6cc16f8-de1e-4c95-83a4-41e634cccb66",
       "CausesNest": {},
       "Value": "эвойская",
-      "GroupId": "2219b97f-718b-4941-a71c-9799c16439da"
+      "GroupId": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     }
   ],
   "Groups": [
     {
-      "Id": "2219b97f-718b-4941-a71c-9799c16439da"
+      "Id": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     }
   ]
 }

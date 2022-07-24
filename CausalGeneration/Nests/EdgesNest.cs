@@ -15,6 +15,14 @@ namespace CausalGeneration.Nests
     {
         public abstract IEnumerable<Edge> Edges();
         public abstract void DiscardCause(Guid nodeId);
+
+        /// <summary>
+        /// Определяет, является ли гнездо причин корневым. Все ребра, входящие в такие гнезда,<br />
+        /// не ссылаются на узлы модели.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsRootNest()
+            => Edges().All(edge => edge.CauseId == null);
     }
     
 }

@@ -1,29 +1,30 @@
 {
-  "Roots": [
-    "09defa8d-e472-4f78-8668-d1d93bdf5110",
-    "580caa3e-5dda-42c3-a8a4-006d7a9a0d0e"
-  ],
   "Nodes": [
     {
-      "Id": "09defa8d-e472-4f78-8668-d1d93bdf5110",
+      "Id": "5afbe73d-fee2-41ac-ae46-be68eea20663",
+      "CausesNest": {},
+      "Value": "рисование"
+    },
+    {
+      "Id": "93497f8b-dc9b-4c3e-80ac-7ab38535e55e",
       "CausesNest": {},
       "Value": "Хобби"
     },
     {
-      "Id": "fad9680d-80d9-4813-8214-1931d2b5b958",
+      "Id": "3f5afa5c-02f8-4be8-8c79-e3def6db5cdb",
       "CausesNest": {},
-      "Value": "мэрайская",
-      "GroupId": "2219b97f-718b-4941-a71c-9799c16439da"
+      "Value": "тшэайская",
+      "GroupId": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     },
     {
-      "Id": "580caa3e-5dda-42c3-a8a4-006d7a9a0d0e",
+      "Id": "ce978e03-7715-4eb4-9c34-f4c0c761350a",
       "CausesNest": {},
       "Value": "Раса"
     }
   ],
   "Groups": [
     {
-      "Id": "2219b97f-718b-4941-a71c-9799c16439da"
+      "Id": "45d6b6e6-10da-45b2-a24e-55909910a5f5"
     }
   ]
 }
