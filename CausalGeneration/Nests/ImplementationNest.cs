@@ -18,10 +18,13 @@ namespace CausalGeneration.Nests
             ImplementationEdge = implementationEdge;
         }
 
-        public override IEnumerable<Edge> Edges()
+        public override IEnumerable<Edge> Edges
         {
-            return ImplementationEdge == null ?
-                Array.Empty<Edge>() : new Edge[] { ImplementationEdge };
+            get
+            {
+                return ImplementationEdge == null ?
+                    Array.Empty<Edge>() : new Edge[] { ImplementationEdge };
+            }
         }
 
         public override void DiscardCause(Guid nodeId)

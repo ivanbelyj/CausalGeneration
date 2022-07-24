@@ -13,7 +13,7 @@ namespace CausalGeneration.Nests
     /// </summary>
     public abstract class EdgesNest
     {
-        public abstract IEnumerable<Edge> Edges();
+        public abstract IEnumerable<Edge> Edges { get; }
         public abstract void DiscardCause(Guid nodeId);
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace CausalGeneration.Nests
         /// </summary>
         /// <returns></returns>
         public bool IsRootNest()
-            => Edges().All(edge => edge.CauseId == null);
+            => Edges.All(edge => edge.CauseId == null);
     }
     
 }

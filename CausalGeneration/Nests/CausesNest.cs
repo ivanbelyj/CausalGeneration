@@ -86,13 +86,16 @@ namespace CausalGeneration.Nests
             }
         }
 
-        public override IEnumerable<Edge> Edges()
+        public override IEnumerable<Edge> Edges
         {
-            foreach (CausesGroup group in Groups)
+            get
             {
-                foreach (CausalEdge edge in group.Edges)
+                foreach (CausesGroup group in Groups)
                 {
-                    yield return edge;
+                    foreach (CausalEdge edge in group.Edges)
+                    {
+                        yield return edge;
+                    }
                 }
             }
         }

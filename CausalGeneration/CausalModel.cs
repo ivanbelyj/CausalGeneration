@@ -19,7 +19,6 @@ namespace CausalGeneration
         /// Корневые узлы требуются на этапе отбрасывания "мусорных" узлов
         /// </summary>
         private ISet<CausalModelNode<TNodeValue>> _roots;
-        // Todo: динамическое определение корней (узлы без причин перед генерацией)
 
         // Структура класса во многом обусловлена необходимостью представления в Json
         public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
@@ -202,7 +201,7 @@ namespace CausalGeneration
 
                 // Для произошедших событий собираются следствия для включения в финальный
                 // набор узлов
-                foreach (Edge edge in node.CausesNest.Edges())
+                foreach (Edge edge in node.CausesNest.Edges)
                 {
                     // Если у узла есть причина, значит узел - ее следствие
                     if (edge.CauseId.HasValue)
@@ -229,7 +228,7 @@ namespace CausalGeneration
             if (node.CausesNest is CausesNest nest)
             {
                 // Определить вероятности
-                foreach (CausalEdge edge in nest.Edges())
+                foreach (CausalEdge edge in nest.Edges)
                 {
                     // Если не определена актуальная вероятность причинной связи
                     if (edge.ActualProbability == null)
@@ -261,7 +260,7 @@ namespace CausalGeneration
 
             // 2. Для каждой причины узла удалять его из Effects, чтобы
             // в дальнейшем обходе по Effects узел не учитывался
-            foreach (Edge edge in node.CausesNest.Edges())
+            foreach (Edge edge in node.CausesNest.Edges)
             {
                 if (edge.CauseId == null)
                     continue;
