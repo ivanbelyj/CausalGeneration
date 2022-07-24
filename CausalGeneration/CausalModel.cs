@@ -18,7 +18,7 @@ namespace CausalGeneration
         /// <summary>
         /// Id корневых узлов
         /// </summary>
-        public ISet<Guid> Roots { get; set; } 
+        public ISet<Guid> Roots { get; set; }
         // Todo: динамическое определение корней (узлы без причин перед генерацией)
 
         // Структура класса во многом обусловлена необходимостью представления в Json
@@ -33,7 +33,10 @@ namespace CausalGeneration
             => Groups.FirstOrDefault(x => x.Id == id);
 
         public List<CausalModelNode<TNodeValue>> FindAllNodesOfGroup(Guid groupId)
-            => Nodes.FindAll(node => node.GroupId == groupId);
+        {
+            var nodes = Nodes.FindAll(node => node.GroupId == groupId);
+            return nodes;
+        }
 
         // Методы для определения и построения модели
         #region ModelCreation
@@ -61,12 +64,49 @@ namespace CausalGeneration
             Roots.Add(id);
         }
 
-        /* public CausalModelNode<TNodeValue> AddRootNode(TNodeValue value, double probability)
+        public void AddVariantsGroup(CausalModelNode<TNodeValue> abstractNode,
+            params TNodeValue[] values)
         {
-            var node = AddNode(new EdgesNest(null, probability), value);
-            AddRoot(node.Id);
-            return node;
-        }*/
+            AddNode(abstractNode);
+            VariantsGroup<TNodeValue> group = new VariantsGroup<TNodeValue>(abstractNode.Id, this);
+            Groups.Add(group);
+            foreach (var val in values)
+            {
+                var edge = new ImplementationEdge(1, abstractNode.Id);
+                var nest = new ImplementationNest(edge);
+                var node = new CausalModelNode<TNodeValue>(nest, val);
+                node.GroupId = group.Id;
+                AddNode(node);
+            }
+        }
+
+        /// <summary>
+        /// Создает группу из абстрактной сущности и ее реализаций
+        /// </summary>
+        /// <param name="abstractNode"></param>
+        /// <param name="implementationVariants"></param>
+        //public void AddVariantsGroupOld(CausalModelNode<TNodeValue> abstractNode,
+        //    params CausalModelNode<TNodeValue>[] implementationVariants)
+        //{
+        //    VariantsGroup<TNodeValue> group = new VariantsGroup<TNodeValue>(abstractNode.Id, this);
+        //    Groups.Add(group);
+        //    foreach (var node in implementationVariants)
+        //    {
+        //        AddNode(node);
+        //    }
+        //}
+
+        /// <summary>
+        /// Создает узел, реализующий абстрактную сущность
+        /// </summary>
+        //public CausalModelNode<TNodeValue> CreateImplementationNode(
+        //    double weight, CausalModelNode<TNodeValue> abstractNode, TNodeValue nodeValue)
+        //{
+        //    var implementationNest = new ImplementationNest(
+        //        new ImplementationEdge(weight, abstractNode.Id));
+        //    var node = new CausalModelNode<TNodeValue>(implementationNest, nodeValue);
+        //    return node;
+        //}
 
         #endregion
 
@@ -106,19 +146,8 @@ namespace CausalGeneration
         }
         #endregion
 
-        public ValidationResult Generate()
-        {
-            ValidationResult res = ValidateModel();
-            if (!res.Succeeded)
-                return res;
-
-            GenerationTrace();
-            DiscardGarbageNodes();
-            
-            return ValidationResult.Success;
-        }
-
-        #region GroupsAndValidation
+        // Todo: сделать валидацию
+        #region Validation
         public ValidationResult ValidateModel()
         {
             return ValidateGroups();
@@ -134,28 +163,21 @@ namespace CausalGeneration
             }
             return ValidationResult.Success;
         }
-        
+
         #endregion
 
         #region Generation
 
-        private void DefineNode(CausalModelNode<TNodeValue> node)
+        public ValidationResult Generate()
         {
-            Random rnd = new Random();
+            ValidationResult res = ValidateModel();
+            if (!res.Succeeded)
+                return res;
 
-            if (node.CausesNest is CausesNest nest)
-            {
-                // Определить вероятности
-                foreach (CausalEdge edge in nest.Edges())
-                {
-                    // Если не определена актуальная вероятность причинной связи
-                    if (edge.ActualProbability == null)
-                    {
-                        edge.ActualProbability = rnd.NextDouble();
-                    }
-                }
-            }
-            
+            GenerationTrace();
+            DiscardGarbageNodes();
+
+            return ValidationResult.Success;
         }
 
         private void GenerationTrace()
@@ -182,17 +204,19 @@ namespace CausalGeneration
                     if (group == null)
                         throw new Exception("Некорректный Id группы у узла");
                     shouldBeDeleted = group.ShouldBeDiscarded(node);
-                } else if (node.CausesNest is CausesNest nest)
+                }
+                else if (node.CausesNest is CausesNest nest)
                 {
                     bool? isHappened = nest.IsHappened();
                     if (!isHappened.HasValue)
                         throw new Exception("Причинные связи узла не определены");
                     shouldBeDeleted = !isHappened.Value;
-                } else
+                }
+                else
                 {
                     throw new Exception("Узел имеет нестандартное гнездо связей, не находясь в группе");
                 }
-                
+
                 if (shouldBeDeleted)
                 {
                     DiscardNode(node);
@@ -219,6 +243,25 @@ namespace CausalGeneration
                     }
                 }
             }
+        }
+
+        private void DefineNode(CausalModelNode<TNodeValue> node)
+        {
+            Random rnd = new Random();
+
+            if (node.CausesNest is CausesNest nest)
+            {
+                // Определить вероятности
+                foreach (CausalEdge edge in nest.Edges())
+                {
+                    // Если не определена актуальная вероятность причинной связи
+                    if (edge.ActualProbability == null)
+                    {
+                        edge.ActualProbability = rnd.NextDouble();
+                    }
+                }
+            }
+
         }
 
         internal void DiscardNode(CausalModelNode<TNodeValue> node)

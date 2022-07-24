@@ -8,15 +8,17 @@ namespace CausalGeneration.Edges
 {
     public class Edge
     {
+        protected Guid? _causeId;
+
         /// <summary>
         /// Guid вершины, представляющей причину. <br/>
         /// null для корневых узлов
         /// </summary>
-        virtual public Guid? CauseId { get; }
+        virtual public Guid? CauseId { get => _causeId; }
 
         public Edge(Guid? causeId = null)
         {
-            CauseId = causeId;
+            _causeId = causeId;
         }
     }
 }

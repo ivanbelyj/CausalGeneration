@@ -107,7 +107,7 @@ namespace CausalGeneration.Groups
                 if (curNodeIndex >= nodes.Length)
                     curNodeIndex = 0;
 
-                var oneEdge = ((ImplementationNest)nodes[curNodeIndex].CausesNest).ImplementationEdge;
+                var oneEdge = ((ImplementationNest)(nodes[curNodeIndex].CausesNest)).ImplementationEdge;
                 choice -= oneEdge.Weight;
             }
             _actualImplementationNodeId = nodes[curNodeIndex].Id;

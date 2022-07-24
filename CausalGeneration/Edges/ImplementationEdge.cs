@@ -15,7 +15,7 @@ namespace CausalGeneration.Edges
         /// </summary>
         public double Weight { get; set; }
 
-        public ImplementationEdge(double weight, Guid? causeId) : base(causeId)
+        public ImplementationEdge(double weight, Guid? causeId = null) : base(causeId)
         {
             Weight = weight;
         }
