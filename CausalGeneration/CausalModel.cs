@@ -151,7 +151,7 @@ namespace CausalGeneration
         {
             foreach (CausalModelNode<TNodeValue> node in Nodes)
             {
-                if (node.CausesNest.IsRootNest())
+                if (node.EdgesNest.IsRootNest())
                     _roots.Add(node);
             }
         }
@@ -181,7 +181,7 @@ namespace CausalGeneration
                         throw new Exception("Некорректный Id группы у узла");
                     shouldBeDeleted = group.ShouldBeDiscarded(node);
                 }
-                else if (node.CausesNest is CausesNest nest)
+                else if (node.EdgesNest is CausesNest nest)
                 {
                     bool? isHappened = nest.IsHappened();
                     if (!isHappened.HasValue)
@@ -201,7 +201,7 @@ namespace CausalGeneration
 
                 // Для произошедших событий собираются следствия для включения в финальный
                 // набор узлов
-                foreach (Edge edge in node.CausesNest.Edges)
+                foreach (Edge edge in node.EdgesNest.Edges)
                 {
                     // Если у узла есть причина, значит узел - ее следствие
                     if (edge.CauseId.HasValue)
@@ -225,7 +225,7 @@ namespace CausalGeneration
         {
             Random rnd = new Random();
 
-            if (node.CausesNest is CausesNest nest)
+            if (node.EdgesNest is CausesNest nest)
             {
                 // Определить вероятности
                 foreach (CausalEdge edge in nest.Edges)
@@ -250,7 +250,7 @@ namespace CausalGeneration
             {
                 node.Effects.ForEach(effect =>
                 {
-                    effect.CausesNest.DiscardCause(node.Id);
+                    effect.EdgesNest.DiscardCause(node.Id);
                 });
             }
             else
@@ -260,7 +260,7 @@ namespace CausalGeneration
 
             // 2. Для каждой причины узла удалять его из Effects, чтобы
             // в дальнейшем обходе по Effects узел не учитывался
-            foreach (Edge edge in node.CausesNest.Edges)
+            foreach (Edge edge in node.EdgesNest.Edges)
             {
                 if (edge.CauseId == null)
                     continue;

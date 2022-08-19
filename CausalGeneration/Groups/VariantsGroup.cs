@@ -48,7 +48,7 @@ namespace CausalGeneration.Groups
                         string.Format(noCause, node.Id, Id)));
                 */
                 
-                if (node.CausesNest is ImplementationNest nest)
+                if (node.EdgesNest is ImplementationNest nest)
                 {
                     ImplementationEdge oneEdge = nest.ImplementationEdge;
 
@@ -83,7 +83,7 @@ namespace CausalGeneration.Groups
 
             // Сумма вероятностей для выбора единственной реализации
             double probSum = nodes.Sum(node =>
-                ((ImplementationNest)node.CausesNest).ImplementationEdge.Weight);
+                ((ImplementationNest)node.EdgesNest).ImplementationEdge.Weight);
 
             // Определение фактических вероятностей не требуется
             /*foreach (var node in nodes)
@@ -107,7 +107,7 @@ namespace CausalGeneration.Groups
                 if (curNodeIndex >= nodes.Length)
                     curNodeIndex = 0;
 
-                var oneEdge = ((ImplementationNest)(nodes[curNodeIndex].CausesNest)).ImplementationEdge;
+                var oneEdge = ((ImplementationNest)(nodes[curNodeIndex].EdgesNest)).ImplementationEdge;
                 choice -= oneEdge.Weight;
             }
             _actualImplementationNodeId = nodes[curNodeIndex].Id;

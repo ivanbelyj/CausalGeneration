@@ -8,22 +8,30 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
+    /// <summary>
+    /// Представляет узел каузальной модели. Может представлять какую-либо сущность: <br />
+    /// событие, существование абстракции, реализацию абстракции, и, теоретически, другие. <br />
+    /// Связан с другими узлами с помощью гнезда связей, которое содержит ребра графа. <br />
+    /// </summary>
+    /// <typeparam name="TNodeValue">Тип значения, которое узел содержит</typeparam>
     public class CausalModelNode<TNodeValue>
     {
-        public CausalModelNode(Guid id, EdgesNest causesNest,
+        public CausalModelNode(Guid id, EdgesNest edgesNest,
             TNodeValue? value = default(TNodeValue))
         {
-            CausesNest = causesNest;
+            EdgesNest = edgesNest;
             Id = id;
             Value = value;
         }
         public CausalModelNode(EdgesNest causesNest,
             TNodeValue? value = default(TNodeValue))
                 : this(Guid.NewGuid(), causesNest, value) { }
+
+        public CausalModelNode() : this (null) { }
         
         public Guid Id { get; set; }
 
-        public EdgesNest CausesNest { get; set; }
+        public EdgesNest EdgesNest { get; set; }
 
         // public Guid GroupId { get; set; }
 
@@ -48,23 +56,18 @@ namespace CausalGeneration
             string str = $"Node {Id}\n";
             str += Value?.ToString() + "\n";
 
-            if (CausesNest is CausesNest causal)
+            if (EdgesNest is CausesNest causal)
             {
                 bool? isHappened = causal.IsHappened();
                 if (isHappened.HasValue)
                     str += $"Is happened: {isHappened}\n";
             }
             str += "Edges\n";
-            foreach (Edge edge in CausesNest.Edges)
+            foreach (Edge edge in EdgesNest.Edges)
             {
                 str += $"\t{edge}\n";
             }
             return str;
         }
-
-        /*public void AddToGroup(NodesGroup<TNodeValue> group)
-        {
-            GroupId = group.Id;
-        }*/
     }
 }

@@ -98,6 +98,11 @@ namespace CausalGeneration.Nests
                     }
                 }
             }
+            set
+            {
+                // Todo: Насколько корректен такой сеттер?
+                Groups = new CausesGroup[] { new CausesGroup((CausalEdge[])value.ToArray()) };
+            }
         }
     }
 }

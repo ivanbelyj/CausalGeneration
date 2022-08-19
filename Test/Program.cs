@@ -47,21 +47,30 @@ JsonSerializerOptions options = new JsonSerializerOptions()
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
 };
-ToFile(model, "model");
 
-ValidationResult res = model.Generate();
-if (!res.Succeeded)
-    throw new Exception("Ошибки валидации.");
-
-ToFile(model, "generated_model");
-
+Generate(model, "model");
 //var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
-//deserializedModel?.Generate();
-//if (deserializedModel != null)
-//    ToFile(deserializedModel, "generated_model2");
+//if (deserializedModel == null)
+//    throw new Exception("Не удалось десериализовать модель.");
+//Generate(deserializedModel, "deserialized-model");
 
-// Console.ReadKey(true);
 int endDebug = 0;
+
+void Generate<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+{
+    ToFile(model, fileName);
+
+    ValidationResult res = model.Generate();
+    if (!res.Succeeded)
+        throw new Exception("Ошибки валидации.");
+
+    string formatString = ".json";
+    if (fileName.Contains(formatString))
+    {
+        fileName = fileName.Replace(formatString, "");
+    }
+    ToFile(model, fileName + ".generated");
+}
 
 void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {

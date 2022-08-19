@@ -25,6 +25,13 @@ namespace CausalGeneration.Nests
                 return ImplementationEdge == null ?
                     Array.Empty<Edge>() : new Edge[] { ImplementationEdge };
             }
+            set
+            {
+                if (value.Count() > 1)
+                    // Todo: ошибка, некорректное значение
+                    throw new ArgumentException("Узел реализации не может иметь несколько причин");
+                ImplementationEdge = (ImplementationEdge)value.First();
+            }
         }
 
         public override void DiscardCause(Guid nodeId)

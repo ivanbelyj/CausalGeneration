@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 namespace CausalGeneration.Nests
 {
     /// <summary>
-    /// Представляет какие-либо связи узла без учета их ограничений и особенностей структуры <br />
+    /// Представляет какие-либо связи узла без учета их ограничений и особенностей
+    /// структуры <br />
     /// </summary>
     public abstract class EdgesNest
     {
-        public abstract IEnumerable<Edge> Edges { get; }
+        public abstract IEnumerable<Edge> Edges { get; set; }  // set - для десериализации
         public abstract void DiscardCause(Guid nodeId);
 
         /// <summary>
-        /// Определяет, является ли гнездо причин корневым. Все ребра, входящие в такие гнезда,<br />
-        /// не ссылаются на узлы модели.
+        /// Определяет, является ли гнездо причин корневым. Все ребра, входящие в такие<br />
+        /// гнезда, не ссылаются на узлы модели.
         /// </summary>
-        /// <returns></returns>
         public bool IsRootNest()
             => Edges.All(edge => edge.CauseId == null);
     }

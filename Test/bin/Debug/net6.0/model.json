@@ -1,8 +1,8 @@
 {
   "Nodes": [
     {
-      "Id": "1542a408-067c-43fe-87bd-e535a65495fe",
-      "CausesNest": {
+      "Id": "1f5bbdf0-4402-4439-b42c-1238a11fd668",
+      "EdgesNest": {
         "Edges": [
           {}
         ]
@@ -10,107 +10,107 @@
       "Value": "Хобби"
     },
     {
-      "Id": "ee82e482-68ce-4feb-ad9c-dcf5428f5bca",
-      "CausesNest": {
+      "Id": "fa1e9058-88bc-4e8d-b389-6739026a1295",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "рисование"
     },
     {
-      "Id": "739521b3-a8cf-4779-b05f-0037de7ed663",
-      "CausesNest": {
+      "Id": "77d2d109-2eca-468b-b636-1d936cb4a21a",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "музыка"
     },
     {
-      "Id": "840c97e3-d2aa-4074-a962-b17a8bf91c28",
-      "CausesNest": {
+      "Id": "f8b28f69-259e-448a-bd87-74da43f68aee",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "ворлдбилдинг"
     },
     {
-      "Id": "df09fe54-1f93-4ee9-b850-db5fb2f7d672",
-      "CausesNest": {
+      "Id": "a0de8af4-2aed-46ed-8995-41031e6300a7",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "программирование"
     },
     {
-      "Id": "9d125bdd-ef55-469c-ab86-b7f229b3d872",
-      "CausesNest": {
+      "Id": "18cd6ccd-f6c9-41a1-9df6-68922f497741",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "писательство"
     },
     {
-      "Id": "b2c8e78c-d12e-431f-9808-92062eaaa4be",
-      "CausesNest": {
+      "Id": "868a422f-80ea-4170-b0c3-f0dfc57b407c",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "1542a408-067c-43fe-87bd-e535a65495fe"
+            "CauseId": "1f5bbdf0-4402-4439-b42c-1238a11fd668"
           }
         ]
       },
       "Value": "Создание языков"
     },
     {
-      "Id": "73ff169d-d668-43cc-9ba5-c92f22ed30c6",
-      "CausesNest": {
+      "Id": "9305b5a2-cfef-44bb-8f77-838f16300d6c",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "b2c8e78c-d12e-431f-9808-92062eaaa4be"
+            "CauseId": "868a422f-80ea-4170-b0c3-f0dfc57b407c"
           }
         ]
       },
       "Value": "создал 1 язык"
     },
     {
-      "Id": "bf417416-a275-46d9-9a9a-579f95358315",
-      "CausesNest": {
+      "Id": "0a27d752-a1a0-44ec-951f-84217625472b",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "b2c8e78c-d12e-431f-9808-92062eaaa4be"
+            "CauseId": "868a422f-80ea-4170-b0c3-f0dfc57b407c"
           }
         ]
       },
       "Value": "разбирается в лингвистике"
     },
     {
-      "Id": "40089a07-8d0a-487c-9351-4ae80b128b4c",
-      "CausesNest": {
+      "Id": "9c8dbbfa-a2d5-4df6-93b8-c1675eee5686",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "b2c8e78c-d12e-431f-9808-92062eaaa4be"
+            "CauseId": "868a422f-80ea-4170-b0c3-f0dfc57b407c"
           }
         ]
       },
       "Value": "говорит на нескольких языках"
     },
     {
-      "Id": "e8fff592-add7-459b-9c3c-feba33115ba9",
-      "CausesNest": {
+      "Id": "687281f3-718a-4ec3-92a9-c6096385c1ca",
+      "EdgesNest": {
         "Edges": [
           {}
         ]
@@ -118,57 +118,57 @@
       "Value": "Раса"
     },
     {
-      "Id": "bbb431e4-8ddf-4352-b23c-704826878f5e",
-      "CausesNest": {
+      "Id": "68b503b5-2665-4bc5-a719-ff8de0736c44",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "e8fff592-add7-459b-9c3c-feba33115ba9"
+            "CauseId": "687281f3-718a-4ec3-92a9-c6096385c1ca"
           }
         ]
       },
       "Value": "тшэайская",
-      "GroupId": "3da1a96e-3302-4c80-ab20-78d470ad2b48"
+      "GroupId": "c265b370-b655-4ae4-a7d9-70c117773c0b"
     },
     {
-      "Id": "4c2c34f5-0b3c-4bcf-a35b-4f85779027dd",
-      "CausesNest": {
+      "Id": "ed03ba5f-2c20-4eee-95c8-41fd8125dd1b",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "e8fff592-add7-459b-9c3c-feba33115ba9"
+            "CauseId": "687281f3-718a-4ec3-92a9-c6096385c1ca"
           }
         ]
       },
       "Value": "мэрайская",
-      "GroupId": "3da1a96e-3302-4c80-ab20-78d470ad2b48"
+      "GroupId": "c265b370-b655-4ae4-a7d9-70c117773c0b"
     },
     {
-      "Id": "d1428d2f-7d6c-4a7b-ba04-121374bd860d",
-      "CausesNest": {
+      "Id": "33d5761f-227f-4432-8ea5-85c4d0a78cc1",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "e8fff592-add7-459b-9c3c-feba33115ba9"
+            "CauseId": "687281f3-718a-4ec3-92a9-c6096385c1ca"
           }
         ]
       },
       "Value": "мйеурийская",
-      "GroupId": "3da1a96e-3302-4c80-ab20-78d470ad2b48"
+      "GroupId": "c265b370-b655-4ae4-a7d9-70c117773c0b"
     },
     {
-      "Id": "bc235ef3-bd21-4009-a5ab-755e2ec5c8d9",
-      "CausesNest": {
+      "Id": "0f1f1a6f-b49c-4bd5-ba28-3fe62b1f44bb",
+      "EdgesNest": {
         "Edges": [
           {
-            "CauseId": "e8fff592-add7-459b-9c3c-feba33115ba9"
+            "CauseId": "687281f3-718a-4ec3-92a9-c6096385c1ca"
           }
         ]
       },
       "Value": "эвойская",
-      "GroupId": "3da1a96e-3302-4c80-ab20-78d470ad2b48"
+      "GroupId": "c265b370-b655-4ae4-a7d9-70c117773c0b"
     }
   ],
   "Groups": [
     {
-      "Id": "3da1a96e-3302-4c80-ab20-78d470ad2b48"
+      "Id": "c265b370-b655-4ae4-a7d9-70c117773c0b"
     }
   ]
 }
