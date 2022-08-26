@@ -23,5 +23,11 @@ namespace CausalGeneration.CausesExpressionTree
             => new InversionOperation(expr);
         public static InversionOperation Not(ProbabilityEdge edge)
             => new InversionOperation(new EdgeLeaf(edge));
+
+        public static EdgeLeaf Edge(ProbabilityEdge edge)
+            => new EdgeLeaf(edge);
+        public static EdgeLeaf Edge(double probability, Guid? causeId = null,
+            double? fixingValue = null)
+            => new EdgeLeaf(new ProbabilityEdge(probability, causeId, fixingValue));
     }
 }

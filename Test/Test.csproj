@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CausalGeneration.Tests\CausalGeneration.Tests.csproj" />
     <ProjectReference Include="..\CausalGeneration\CausalGeneration.csproj" />
   </ItemGroup>
 

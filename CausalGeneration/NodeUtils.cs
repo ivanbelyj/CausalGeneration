@@ -11,8 +11,8 @@ namespace CausalGeneration
 {
     public static class NodeUtils
     {
-        public static CausalModelNode<TNodeValue> CreateNode<TNodeValue>(Guid causeId,
-            double probability, TNodeValue value)
+        public static CausalModelNode<TNodeValue> CreateNode<TNodeValue>(double probability,
+            TNodeValue? value = default(TNodeValue), Guid? causeId = null)
             => new CausalModelNode<TNodeValue>(new ProbabilityNest(causeId, probability), value);
 
         private static CausalModelNode<TNodeValue> CreateNodeWithOperation<TNodeValue>(
@@ -43,7 +43,7 @@ namespace CausalGeneration
         /// </summary>
         /// <returns></returns>
         public static ImplementationNode<TNodeValue> CreateImplementation<TNodeValue>(
-            Guid abstractNodeId, double weight, TNodeValue value)
+            Guid abstractNodeId, double weight, TNodeValue? value = default(TNodeValue))
             => new ImplementationNode<TNodeValue>(abstractNodeId,
                 new WeightNest(abstractNodeId, weight), new ProbabilityNest(null, 1), value);
     }

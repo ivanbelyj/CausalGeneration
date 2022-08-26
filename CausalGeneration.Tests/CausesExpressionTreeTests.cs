@@ -1,19 +1,18 @@
 ﻿using CausalGeneration.CausesExpressionTree;
 using CausalGeneration.Edges;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace CausalGeneration.Tests
 {
     public class CausesExpressionTreeTests
     {
-        private ProbabilityEdge NewFalseEdge() => new ProbabilityEdge(0, null, 0.5);
-        private ProbabilityEdge NewTrueEdge() => new ProbabilityEdge(1, null, 0.5);
-
         [Fact]
         public void EdgeLeafTest()
         {
-            var falseEdge = NewFalseEdge();
-            var trueEdge = NewTrueEdge();
+            var falseEdge = TestUtils.NewFalseEdge();
+            var trueEdge = TestUtils.NewTrueEdge();
 
             Assert.False(new EdgeLeaf(falseEdge).Evaluate());
             Assert.True(new EdgeLeaf(trueEdge).Evaluate());
@@ -23,10 +22,10 @@ namespace CausalGeneration.Tests
         public void ConjunctionOperationTest()
         {
             // Todo: что, если фиксирующее значение равно 0 при вероятности 0?
-            var falseEdge = NewFalseEdge();
-            var falseEdge1 = NewFalseEdge();
-            var trueEdge = NewTrueEdge();
-            var trueEdge1 = NewTrueEdge();
+            var falseEdge = TestUtils.NewFalseEdge();
+            var falseEdge1 = TestUtils.NewFalseEdge();
+            var trueEdge = TestUtils.NewTrueEdge();
+            var trueEdge1 = TestUtils.NewTrueEdge();
 
             Assert.False(Expressions.And(falseEdge, falseEdge1).Evaluate());
             Assert.False(Expressions.And(falseEdge, trueEdge).Evaluate());
@@ -37,10 +36,10 @@ namespace CausalGeneration.Tests
         [Fact]
         public void DisjunctionOperationTest()
         {
-            var falseEdge = NewFalseEdge();
-            var falseEdge1 = NewFalseEdge();
-            var trueEdge = NewTrueEdge();
-            var trueEdge1 = NewTrueEdge();
+            var falseEdge = TestUtils.NewFalseEdge();
+            var falseEdge1 = TestUtils.NewFalseEdge();
+            var trueEdge = TestUtils.NewTrueEdge();
+            var trueEdge1 = TestUtils.NewTrueEdge();
 
 
             Assert.False(Expressions.Or(falseEdge, falseEdge1).Evaluate());
@@ -52,11 +51,31 @@ namespace CausalGeneration.Tests
         [Fact]
         public void InversionTest()
         {
-            var falseEdge = NewFalseEdge();
-            var trueEdge = NewTrueEdge();
+            var falseEdge = TestUtils.NewFalseEdge();
+            var trueEdge = TestUtils.NewTrueEdge();
 
             Assert.True(Expressions.Not(falseEdge).Evaluate());
             Assert.False(Expressions.Not(trueEdge).Evaluate());
+        }
+
+
+        [Fact]
+        public void EdgesTest()
+        {
+            const int TEST_SIZE = 5;
+
+            var edges = new ProbabilityEdge[TEST_SIZE];
+            for (int i = 0; i < TEST_SIZE; i++)
+                edges[i] = TestUtils.NewTrueEdge();
+
+            var or = Expressions.Or(edges);
+            var and = Expressions.And(edges);
+            var not = Expressions.Not(TestUtils.NewFalseEdge());
+
+            Assert.Equal(TEST_SIZE, or.Edges.Count());
+            Assert.Equal(TEST_SIZE, and.Edges.Count());
+            Assert.Single(not.Edges);
+            Assert.Single(Expressions.Edge(TestUtils.NewTrueEdge()).Edges);
         }
     }
 }

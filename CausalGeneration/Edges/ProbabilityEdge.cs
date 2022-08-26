@@ -31,6 +31,7 @@ namespace CausalGeneration.Edges
             double? actualProbability = null)
         {
             Probability = probability;
+            CauseId = causeId;
             FixingValue = actualProbability;
         }
 

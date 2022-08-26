@@ -14,7 +14,15 @@ namespace CausalGeneration.Nests
         /// в такие гнезда, не ссылаются на узлы модели.
         /// </summary>
         public bool IsRootNest()
-            => GetEdges().All(edge => edge.CauseId == null);
+        {
+            // GetEdges().All(edge => edge.CauseId == null);
+            foreach (var edge in GetEdges())
+            {
+                if (edge.CauseId is not null)
+                    return false;
+            }
+            return true;
+        }
 
         public abstract IEnumerable<CausalEdge> GetEdges();
     }
