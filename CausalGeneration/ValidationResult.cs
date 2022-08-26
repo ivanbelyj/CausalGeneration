@@ -8,13 +8,13 @@ namespace CausalGeneration
 {
     public class ValidationResult
     {
-        public IEnumerable<CausalModelError>? Errors { get; set; }
+        public IEnumerable<ValidationError>? Errors { get; set; }
         public bool Succeeded => Errors == null || Errors.Count() == 0;
         public static ValidationResult Success
             => new ValidationResult();
 
         public ValidationResult() { }
-        public static ValidationResult Failed(params CausalModelError[] errors)
+        public static ValidationResult Failed(params ValidationError[] errors)
         {
             return new ValidationResult() { Errors = errors.ToList() };
         }

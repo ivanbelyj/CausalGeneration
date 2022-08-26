@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CausalGeneration
 {
-    public class CausalModelError
+    public class ValidationError
     {
         public string? Code { get; set; }
         public string? Description { get; set; }
@@ -28,7 +28,7 @@ namespace CausalGeneration
             return str;
         }
 
-        public CausalModelError(string code, string description)
+        public ValidationError(string code, string description)
         {
             Code = code;
             Description = description;

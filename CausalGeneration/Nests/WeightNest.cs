@@ -1,0 +1,43 @@
+﻿using CausalGeneration.Edges;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CausalGeneration.Nests
+{
+    public class WeightNest : Nest
+    {
+        private List<WeightEdge> _edges { get; } = new List<WeightEdge>();
+
+        public WeightNest(params WeightEdge[] edges) {
+            _edges = edges.ToList();
+        }
+
+        /// <summary>
+        /// Создает весовое гнездо, которое имеет единственное весовое ребро
+        /// </summary>
+        public WeightNest(Guid? causeId, double weight = 1)
+        {
+            _edges.Add(new WeightEdge(weight, causeId));
+        }
+
+        /// <summary>
+        /// Подсчитывает общий вес гнезда, основываясь на весовых ребрах, связанных
+        /// с произошедшими причинными событиями
+        /// </summary>
+        /// <returns></returns>
+        public double TotalWeight()
+        {
+            if (_edges.Count == 0)
+                throw new InvalidOperationException("Весовое гнездо не имеет ребер.");
+
+            // Todo: total weight
+
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<CausalEdge> GetEdges() => _edges;
+    }
+}

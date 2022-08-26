@@ -1,73 +1,70 @@
 ﻿using CausalGeneration.Edges;
-using CausalGeneration.Nests;
+using CausalGeneration.CausesExpressionTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CausalGeneration.Nests;
 
 namespace CausalGeneration
 {
     /// <summary>
-    /// Представляет узел каузальной модели. Может представлять какую-либо сущность: <br />
-    /// событие, существование абстракции, реализацию абстракции, и, теоретически, другие. <br />
-    /// Связан с другими узлами с помощью гнезда связей, которое содержит ребра графа. <br />
+    /// Узел каузальной модели, моделирующий существование факта, событие, свойство, и т.п.
+    /// Находится в причинно-следственных отношениях с другими узлами посредством
+    /// каузальных связей.
+    /// Причинные вероятностные связи структурируются в соотв. гнезде причин.
+    /// Смысл вероятностных гнезд для узлов-реализаций абстрактных сущностей (АС),
+    /// так называемых вариантов, которые представлены производным классом,
+    /// заключается в том, что реализации АС могут появляться
+    /// в зависимости от логической комбинации факторов, а не только избираться посредством
+    /// весов.
     /// </summary>
-    /// <typeparam name="TNodeValue">Тип значения, которое узел содержит</typeparam>
+    /// <typeparam name = "TNodeValue">Тип значения, которое узел содержит</typeparam>
     public class CausalModelNode<TNodeValue>
     {
-        public CausalModelNode(Guid id, EdgesNest edgesNest,
+        public CausalModelNode(Guid id, ProbabilityNest probabilityNest,
             TNodeValue? value = default(TNodeValue))
         {
-            EdgesNest = edgesNest;
+            ProbabilityNest = probabilityNest;
             Id = id;
             Value = value;
         }
-        public CausalModelNode(EdgesNest causesNest,
+        public CausalModelNode(ProbabilityNest probabilityNest,
             TNodeValue? value = default(TNodeValue))
-                : this(Guid.NewGuid(), causesNest, value) { }
-
-        public CausalModelNode() : this (null) { }
+                : this(Guid.NewGuid(), probabilityNest, value) { }
         
         public Guid Id { get; set; }
 
-        public EdgesNest EdgesNest { get; set; }
+        public ProbabilityNest ProbabilityNest { get; set; }
 
-        // public Guid GroupId { get; set; }
+        /// <summary>
+        /// Все исходящие причинные ребра. Гнезд разного рода может быть несколько,
+        /// поэтому метод можно переопределять
+        /// </summary>
+        public virtual IEnumerable<CausalEdge> GetEdges() => ProbabilityNest.GetEdges();
+
+        public virtual bool IsRootNode() => ProbabilityNest.IsRootNest();
 
         /// <summary>
         /// Если null, то данное звено – только связующее
         /// </summary>
         public TNodeValue? Value { get; set; }
 
+        // Члены класса, используемые и определяемые на этапе подготовки и генерации
+        // в CausalModel, по сути, не относящиеся к ответственности класса,
+        // однако хранить их где-то в другом месте было бы проблематично и
+        // не так быстро
+        #region Generation
         /// <summary>
-        /// Определяется после 1-го этапа генерации. Требуется для обхода
-        /// графа на 2-ом этапе.
+        /// true, если событие входит в результирующую модель
         /// </summary>
-        internal List<CausalModelNode<TNodeValue>>? Effects { get; set; } = null;
+        internal bool? IsHappened { get; set; }
 
         /// <summary>
-        /// null, если узел не относится к группе
+        /// true, если для узла уже определена глубина
         /// </summary>
-        public Guid? GroupId { get; set; }
-
-        public override string ToString()
-        {
-            string str = $"Node {Id}\n";
-            str += Value?.ToString() + "\n";
-
-            if (EdgesNest is CausesNest causal)
-            {
-                bool? isHappened = causal.IsHappened();
-                if (isHappened.HasValue)
-                    str += $"Is happened: {isHappened}\n";
-            }
-            str += "Edges\n";
-            foreach (Edge edge in EdgesNest.Edges)
-            {
-                str += $"\t{edge}\n";
-            }
-            return str;
-        }
+        internal bool HasLevel { get; set; }
+        #endregion
     }
 }

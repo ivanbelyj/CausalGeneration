@@ -1,6 +1,5 @@
 ﻿using CausalGeneration.Edges;
-using CausalGeneration.Groups;
-using CausalGeneration.Nests;
+using CausalGeneration.CausesExpressionTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,73 +9,52 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Threading.Tasks;
+using CausalGeneration.Nests;
 
 namespace CausalGeneration
 {
     public class CausalModel<TNodeValue>
     {
-        /// <summary>
-        /// Корневые узлы требуются на этапе отбрасывания "мусорных" узлов
-        /// </summary>
-        private ISet<CausalModelNode<TNodeValue>> _roots;
-
-        // Структура класса во многом обусловлена необходимостью представления в Json
         public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
-        public List<NodesGroup<TNodeValue>> Groups { get; set; }
-
-        public CausalModelNode<TNodeValue>? FindNodeById(Guid id)
-            => Nodes.FirstOrDefault(x => x.Id == id);
-
-        public NodesGroup<TNodeValue>? FindGroupById(Guid id)
-            => Groups.FirstOrDefault(x => x.Id == id);
-
-        public List<CausalModelNode<TNodeValue>> FindAllNodesOfGroup(Guid groupId)
-        {
-            var nodes = Nodes.FindAll(node => node.GroupId == groupId);
-            return nodes;
-        }
-
-        // Методы для определения и построения модели
+        // Todo: Методы для определения и построения модели
         #region ModelCreation
         public CausalModel()
         {
-            _roots = new HashSet<CausalModelNode<TNodeValue>>();
             Nodes = new List<CausalModelNode<TNodeValue>>();
-            Groups = new List<NodesGroup<TNodeValue>>();
         }
 
-        public CausalModelNode<TNodeValue> AddNode(CausalModelNode<TNodeValue> node)
+        public void AddNodes(params CausalModelNode<TNodeValue>[] nodes)
         {
-            Nodes.Add(node);
-            return node;
+            foreach (var node in nodes)
+                Nodes.Add(node);
         }
-        public CausalModelNode<TNodeValue> AddNode(EdgesNest causesNest,
+        public CausalModelNode<TNodeValue> AddNode(ProbabilityNest causesNest,
             TNodeValue? value = default(TNodeValue))
         {
             var node = new CausalModelNode<TNodeValue>(causesNest, value);
-            return AddNode(node);
+            Nodes.Add(node);
+            return node;
         }
+        
 
         public void AddVariantsGroup(CausalModelNode<TNodeValue> abstractNode,
-            params TNodeValue[] values)
+            params TNodeValue[] implementations)
         {
-            AddNode(abstractNode);
-            VariantsGroup<TNodeValue> group = new VariantsGroup<TNodeValue>(abstractNode.Id, this);
-            Groups.Add(group);
-            foreach (var val in values)
+            Nodes.Add(abstractNode);
+            
+            foreach (var val in implementations)
             {
-                var edge = new ImplementationEdge(1, abstractNode.Id);
-                var nest = new ImplementationNest(edge);
-                var node = new CausalModelNode<TNodeValue>(nest, val);
-                node.GroupId = group.Id;
-                AddNode(node);
+                // WeightNest nest = new WeightNest(abstractNode.Id, 1);
+                // var node = new ImplementationNode<TNodeValue>(abstractNode.Id, nest);
+                var node = NodeUtils.CreateImplementation(abstractNode.Id, 1, val);
+                Nodes.Add(node);
             }
         }
+
         #endregion
 
-        // Todo: Десериализация
-        // Todo: Баг с сериализацией - CausesNest в CausalModel не сериализуется
+        // Todo: Сериализация / десериализация
         #region Json
         public async Task ToJsonAsync(Stream stream, bool writeIndented = false)
         {
@@ -113,202 +91,243 @@ namespace CausalGeneration
         }
         #endregion
 
-        // Todo: Полная валидация
+        // Todo: Полная валидация модели
         #region Validation
         public ValidationResult ValidateModel()
         {
-            return ValidateGroups();
-        }
-
-        private ValidationResult ValidateGroups()
-        {
-            foreach (NodesGroup<TNodeValue> group in Groups)
-            {
-                ValidationResult res = group.ValidateNodes();
-                if (!res.Succeeded)
-                    return res;
-            }
             return ValidationResult.Success;
         }
 
         #endregion
+
         #region Generation
 
         public ValidationResult Generate()
         {
+            // Проверить корректность
             ValidationResult res = ValidateModel();
             if (!res.Succeeded)
                 return res;
 
-            DefineRoots();
-            GenerationTrace();
-            DiscardGarbageNodes();
+            // Представить модель в вид, пригодный для генерации
+            Preparate();
+
+            // Обойти модель по уровням и сгенерировать результирующую модель
+            LevelTrace();
 
             return ValidationResult.Success;
         }
 
-        private void DefineRoots()
+        /// <summary>
+        /// Разложение модели по уровням. Индекс - уровень, значение - узлы уровня.
+        /// </summary>
+        private Dictionary<int, List<CausalModelNode<TNodeValue>>>? _levelModel;
+
+        /// <summary>
+        /// Этап предварительной подготовки данных для любых последующих генераций.
+        /// </summary>
+        private void Preparate()
         {
-            foreach (CausalModelNode<TNodeValue> node in Nodes)
+            foreach (var node in Nodes)
             {
-                if (node.EdgesNest.IsRootNest())
-                    _roots.Add(node);
+                // Иначе узел не корневой, а значит имеет причинные узлы.
+                // Восстановить причины по id. id требуется для удобства представления
+                // в json
+                foreach (var edge in node.GetEdges())
+                {
+                    if (edge.CauseId is null)
+                        continue;
+                    // Todo: если элемент с таким id не существует - ошибка
+                    edge.Cause = Nodes.First(x => x.Id == edge.CauseId);
+                    if (edge.Cause is null)
+                        throw new NullReferenceException("Узел с заданным CauseId не найден");
+                }
+            }
+
+            _levelModel = new Dictionary<int, List<CausalModelNode<TNodeValue>>>();
+            // Для каждого узла определяется уровень
+            foreach (var node in Nodes)
+            {
+                // Если элемент уже попал в соответствующий уровень
+                if (node.HasLevel)
+                    continue;
+
+                int nodeLevel = DefineLevel(node);
+
+                if (!_levelModel.ContainsKey(nodeLevel))
+                {
+                    _levelModel[nodeLevel] = new List<CausalModelNode<TNodeValue>>();
+                }
+                _levelModel[nodeLevel].Add(node);
             }
         }
 
-        private void GenerationTrace()
+        //private int DefineLevel(CausalModelNode<TNodeValue> node)
+        //{
+        //    int maxCauseLevel = -1;
+        //    // Если ни одно ребро не ссылается на узел модели
+        //    if (!node.IsRootNode())
+        //    {
+        //        foreach (var edge in node.GetEdges())
+        //        {
+        //            // Некоторые ребра могут не иметь причин, это нормально
+        //            if (edge.Cause is null)
+        //                continue;
+
+        //            var cause = ((CausalModelNode<TNodeValue>)(edge.Cause));
+        //            DefineLevel(cause);
+        //            if (cause.Level is null)
+        //                throw new NullReferenceException("После процедуры определения "
+        //                    + "глубин уровень причины оказался неопределенным.");
+        //            int causeLevel = cause.Level.Value;
+
+        //            if (causeLevel > maxCauseLevel)
+        //                maxCauseLevel = causeLevel;
+        //        }
+        //    }
+
+        //    node.Level = maxCauseLevel + 1;
+
+        //    // Устанавливается глубина модели
+        //    if (node.Level > _modelDepth)
+        //        _modelDepth = node.Level;
+        //}
+
+        private int DefineLevel(CausalModelNode<TNodeValue> node)
         {
-            // Определить узлы групп
-            foreach (NodesGroup<TNodeValue> group in Groups)
+            int maxCauseLevel = -1;
+            // Если ни одно ребро не ссылается на узел модели
+            if (!node.IsRootNode())
             {
-                group.Define();
+                foreach (var edge in node.GetEdges())
+                {
+                    // Некоторые ребра могут не иметь причин, это нормально
+                    if (edge.Cause is null)
+                        continue;
+
+                    var cause = ((CausalModelNode<TNodeValue>)(edge.Cause));
+
+                    int causeLevel = DefineLevel(cause);
+                    if (causeLevel > maxCauseLevel)
+                        maxCauseLevel = causeLevel;
+                }
             }
 
-            foreach (CausalModelNode<TNodeValue> node in Nodes.ToList())
+            // Если это корневой узел - 0
+            return maxCauseLevel + 1;
+        }
+
+        /// <summary>
+        /// Абстрактные сущности (АС), найденные в модели, а также соответствующие
+        /// совокупности их реализаций. В список включаются узлы, удовлетворяющие первому
+        /// условию, это определяется в LevelTrace().
+        /// </summary>
+        private Dictionary<CausalModelNode<TNodeValue>, List<ImplementationNode<TNodeValue>>>?
+            _implementationGroups;
+
+        /// <summary>
+        /// На основе подготовленных данных обходит модель и генерирует результирующую
+        /// </summary>
+        private void LevelTrace()
+        {
+            if (_levelModel is null)
+                throw new InvalidOperationException("Перед генерацией модель "
+                    + "не разложена по уровням");
+
+            // Узлы, представляющие события, удовлетворяющие первому условию существования
+            // в моделируемой ситуации
+            var happened = new List<CausalModelNode<TNodeValue>>();
+
+            _implementationGroups = new Dictionary<CausalModelNode<TNodeValue>,
+                    List<ImplementationNode<TNodeValue>>>();
+
+            foreach (var level in _levelModel)
             {
-                // Определить узел, чтобы в дальнейшем узнать, произошло ли событие
-                if (node.GroupId == null)
+                // Определить узлы уровня
+                foreach (var node in level.Value)
+                {
                     DefineNode(node);
-
-                // Отбрасывание непроизошедшего события
-                bool shouldBeDeleted;
-
-                // Некоторые группы переопределяют правила удаления
-                if (node.GroupId != null)
-                {
-                    NodesGroup<TNodeValue>? group = FindGroupById(node.GroupId.Value);
-                    if (group == null)
-                        throw new Exception("Некорректный Id группы у узла");
-                    shouldBeDeleted = group.ShouldBeDiscarded(node);
-                }
-                else if (node.EdgesNest is CausesNest nest)
-                {
-                    bool? isHappened = nest.IsHappened();
-                    if (!isHappened.HasValue)
-                        throw new Exception("Причинные связи узла не определены");
-                    shouldBeDeleted = !isHappened.Value;
-                }
-                else
-                {
-                    throw new Exception("Узел имеет нестандартное гнездо связей, не находясь в группе");
                 }
 
-                if (shouldBeDeleted)
+                // Выбрать узлы, удовлетворяющие первому условию существования,
+                // пока что пропуская варианты реализаций
+                foreach (var node in level.Value)
                 {
-                    DiscardNode(node);
-                    continue;
-                }
+                    // Необходимое условие существования для любого узла
+                    if (!node.ProbabilityNest.IsHappened())
+                        continue;
 
-                // Для произошедших событий собираются следствия для включения в финальный
-                // набор узлов
-                foreach (Edge edge in node.EdgesNest.Edges)
-                {
-                    // Если у узла есть причина, значит узел - ее следствие
-                    if (edge.CauseId.HasValue)
+                    // Реализации АС, удовл. 1-му усл., откладываются в словарь
+                    if (node is ImplementationNode<TNodeValue> implNode)
                     {
-                        CausalModelNode<TNodeValue>? cause =
-                            FindNodeById(edge.CauseId.Value);
-                        if (cause != null)
+                        CausalModelNode<TNodeValue> abstractEntity = Nodes.First(x =>
+                            x.Id == implNode.AbstractNodeId);
+                        if (_implementationGroups.ContainsKey(abstractEntity))
                         {
-                            if (cause.Effects == null)
-                            {
-                                cause.Effects = new List<CausalModelNode<TNodeValue>>();
-                            }
-                            cause.Effects.Add(node);
+                            _implementationGroups[implNode].Add(implNode);
                         }
+                        else
+                        {
+                            _implementationGroups.Add(abstractEntity,
+                                new List<ImplementationNode<TNodeValue>>() { implNode });
+                        }
+                    }
+                    else
+                    {
+                        happened.Add(node);
                     }
                 }
             }
+
+            // Группы реализаций могут простираться по любым уровням,
+            // однако требуется сделать выбор единственного варианта в момент, когда
+            // первое условие существования уже определено для всех вариантов.
+            foreach ((var abstrEntity, var group) in _implementationGroups)
+            {
+                // Выбрать единственную реализацию из группы
+                happened.Add(SelectImplementation(group));
+            }
+
+            Nodes = happened;
         }
 
+        private ImplementationNode<TNodeValue> SelectImplementation(
+            List<ImplementationNode<TNodeValue>> nodes)
+        {
+            Random rnd = new Random();
+
+            // Сумма вероятностей для выбора единственной реализации
+            double probSum = nodes.Sum(node => node.WeightNest.TotalWeight());
+
+            // Определить Id единственной реализации
+            // Алгоритм Roulette wheel selection
+            double choice = rnd.NextDouble(0, probSum);
+            int curNodeIndex = -1;
+            while (choice >= 0)
+            {
+                curNodeIndex++;
+                if (curNodeIndex >= nodes.Count)
+                    curNodeIndex = 0;
+
+                choice -= nodes[curNodeIndex].WeightNest.TotalWeight();
+            }
+            return nodes[curNodeIndex];
+        }
+
+        /// <summary>
+        /// Определяет фиксирующие значения для всех причинных ребер узла
+        /// </summary>
         private void DefineNode(CausalModelNode<TNodeValue> node)
         {
             Random rnd = new Random();
 
-            if (node.EdgesNest is CausesNest nest)
+            // Определить неопределенные ранее фиксирующие значения для всех ребер
+            foreach (ProbabilityEdge edge in node.ProbabilityNest.GetEdges())
             {
-                // Определить вероятности
-                foreach (CausalEdge edge in nest.Edges)
+                if (edge.FixingValue == null)
                 {
-                    // Если не определена актуальная вероятность причинной связи
-                    if (edge.ActualProbability == null)
-                    {
-                        edge.ActualProbability = rnd.NextDouble();
-                    }
+                    edge.FixingValue = rnd.NextDouble();
                 }
-            }
-
-        }
-
-        internal void DiscardNode(CausalModelNode<TNodeValue> node)
-        {
-            // 1. Для каждого следствия удалить node из гнезда причин,
-            // чтобы не учитывать непроизошедшее событие в структуре
-            // сгенерированной модели
-
-            if (node.Effects != null)
-            {
-                node.Effects.ForEach(effect =>
-                {
-                    effect.EdgesNest.DiscardCause(node.Id);
-                });
-            }
-            else
-            {
-                // Иначе это лист графа, он не имеет следствий
-            }
-
-            // 2. Для каждой причины узла удалять его из Effects, чтобы
-            // в дальнейшем обходе по Effects узел не учитывался
-            foreach (Edge edge in node.EdgesNest.Edges)
-            {
-                if (edge.CauseId == null)
-                    continue;
-                var cause = FindNodeById(edge.CauseId.Value);
-                cause?.Effects?.Remove(node);
-            }
-
-            // 3. Удалить из _nodes, т.к. событие больше не нужно
-            Nodes.Remove(node);
-
-            // 4. Если данный узел - корневой, то также удалить из корней
-            if (_roots.Contains(node))
-            {
-                _roots.Remove(node);
-            }
-        }
-
-        /// <summary>
-        /// Путем прохода по модели от причин к следствиям, оставляет в модели только
-        /// актуальные узлы
-        /// </summary>
-        private void DiscardGarbageNodes()
-        {
-            Nodes = ActualNodes();
-        }
-
-        private List<CausalModelNode<TNodeValue>> ActualNodes()
-        {
-            var res = new List<CausalModelNode<TNodeValue>>();
-            foreach (CausalModelNode<TNodeValue> root in _roots)
-            {
-                AddNodeAndEffects(res, root);
-            }
-            return res;
-        }
-        private void AddNodeAndEffects(List<CausalModelNode<TNodeValue>> list,
-            CausalModelNode<TNodeValue>? node)
-        {
-            if (node != null)
-            {
-                if (node.Effects != null)
-                {
-                    foreach (CausalModelNode<TNodeValue> effect in node.Effects)
-                    {
-                        AddNodeAndEffects(list, effect);
-                    }
-                }
-                list.Add(node);
             }
         }
         #endregion
