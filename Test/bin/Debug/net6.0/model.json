@@ -1,7 +1,7 @@
 {
   "Nodes": [
     {
-      "Id": "c0e758c8-795e-4959-9c6c-8fee4aa16a94",
+      "Id": "8a2f694c-271a-4732-bf1e-ac18b6f8f470",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
@@ -14,12 +14,13 @@
       "Value": "Хобби"
     },
     {
-      "Id": "877da633-7c87-4e04-ab31-beaee364f60a",
+      "Id": "73fa1504-29f2-40d0-813e-fc7d94364acc",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.5
+              "Probability": 0.5,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -27,12 +28,13 @@
       "Value": "рисование"
     },
     {
-      "Id": "226d21e4-0f5a-48aa-827f-c11441f0e176",
+      "Id": "57d25b4a-1d8e-4353-83b5-90b38e6eb26f",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.5
+              "Probability": 0.5,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -40,12 +42,13 @@
       "Value": "музыка"
     },
     {
-      "Id": "fdf2d721-4bd7-4a26-85db-24b9ce1d9b5a",
+      "Id": "43c76e93-bbc0-463d-b626-ce09f4b700de",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.5
+              "Probability": 0.5,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -53,12 +56,13 @@
       "Value": "ворлдбилдинг"
     },
     {
-      "Id": "f3e04d72-62d4-4bcf-a690-d6a93b7cad3a",
+      "Id": "bc03569f-fec5-439f-a3ed-bb34af46e060",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.5
+              "Probability": 0.5,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -66,12 +70,13 @@
       "Value": "программирование"
     },
     {
-      "Id": "513269a5-5e48-49ae-bf29-57ec05dfce49",
+      "Id": "9442e9fe-dc90-4006-8381-3c9b3f33a8b2",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.5
+              "Probability": 0.5,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -79,12 +84,13 @@
       "Value": "писательство"
     },
     {
-      "Id": "b7a40a71-df01-4fce-b048-73714cab2107",
+      "Id": "c598106a-d7df-4e4a-82ef-cc47531df2f4",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.3
+              "Probability": 0.3,
+              "CauseId": "8a2f694c-271a-4732-bf1e-ac18b6f8f470"
             }
           ]
         }
@@ -92,12 +98,13 @@
       "Value": "Создание языков"
     },
     {
-      "Id": "7f04e3b6-51f6-4d27-bfff-083e0bc060bc",
+      "Id": "50b3759a-391a-4e72-b012-3a226cb75b96",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.7
+              "Probability": 0.7,
+              "CauseId": "c598106a-d7df-4e4a-82ef-cc47531df2f4"
             }
           ]
         }
@@ -105,12 +112,13 @@
       "Value": "создал 1 язык"
     },
     {
-      "Id": "cc9f0d6c-7d18-42ab-8598-e6c0aa1b237e",
+      "Id": "c098c320-716c-44ac-9c44-a1dc8e37f3c6",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.7
+              "Probability": 0.7,
+              "CauseId": "c598106a-d7df-4e4a-82ef-cc47531df2f4"
             }
           ]
         }
@@ -118,12 +126,13 @@
       "Value": "разбирается в лингвистике"
     },
     {
-      "Id": "2e2c9f49-08cf-4590-9fe3-7b4c330dbddf",
+      "Id": "de5bec7e-ce5a-43c9-b643-7e95d732ec0a",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
             {
-              "Probability": 0.7
+              "Probability": 0.7,
+              "CauseId": "c598106a-d7df-4e4a-82ef-cc47531df2f4"
             }
           ]
         }
@@ -131,7 +140,7 @@
       "Value": "говорит на нескольких языках"
     },
     {
-      "Id": "2508a5d3-a56d-400e-99b0-df6b9ab4f594",
+      "Id": "6c230cb4-e9ad-48d4-b88f-e8349ce19b46",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
@@ -144,7 +153,7 @@
       "Value": "Раса"
     },
     {
-      "Id": "e3c87311-f735-4891-b6b3-30304b0ed61e",
+      "Id": "8e6ce4b4-2916-426e-918f-154f1fe4ef70",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
@@ -157,7 +166,7 @@
       "Value": "тшэайская"
     },
     {
-      "Id": "30f65b7d-aa67-4f83-949f-7c3a902735e6",
+      "Id": "438007c0-102c-49a7-ac5e-0f5f14bd7368",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
@@ -170,7 +179,7 @@
       "Value": "мэрайская"
     },
     {
-      "Id": "eb40272f-25bd-4d77-a6cc-de0c83c448a4",
+      "Id": "ebfc9852-2f8a-4cc4-8441-36e4360fc630",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [
@@ -183,7 +192,7 @@
       "Value": "мйеурийская"
     },
     {
-      "Id": "766d1a23-1f99-4425-adee-33c78f298536",
+      "Id": "88b98bac-f4fb-40c4-9dd4-7bd21cdc4438",
       "ProbabilityNest": {
         "CausesExpression": {
           "Edges": [

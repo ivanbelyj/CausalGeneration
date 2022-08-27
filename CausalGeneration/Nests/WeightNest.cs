@@ -1,4 +1,5 @@
 ﻿using CausalGeneration.Edges;
+using CausalGeneration.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace CausalGeneration.Nests
     {
         private List<WeightEdge> _edges { get; } = new List<WeightEdge>();
 
-        public WeightNest(params WeightEdge[] edges) {
+        public WeightNest(params WeightEdge[] edges)
+        {
             _edges = edges.ToList();
         }
 
@@ -31,11 +33,31 @@ namespace CausalGeneration.Nests
         public double TotalWeight()
         {
             if (_edges.Count == 0)
-                throw new InvalidOperationException("Весовое гнездо не имеет ребер.");
+                throw new InvalidOperationException("Весовое гнездо не имеет ребер");
+
+            double weightSum = 0;
 
             // Todo: total weight
+            foreach (var edge in _edges)
+            {
+                var cause = (IHappenable?)edge.Cause;
 
-            throw new NotImplementedException();
+                // Если у весового гнезда нет причины, считается, что вес всегда влияет на выбор
+                if (cause is null)
+                {
+                    weightSum += edge.Weight;
+                    continue;
+                }
+
+                if (cause.IsHappened is null)
+                    throw new NullReferenceException("На этапе вычисления суммы весового гнезда "
+                        + " не было определено, произошло ли причинное событие");
+
+                if (cause.IsHappened.Value)
+                    weightSum += edge.Weight;
+            }
+
+            return weightSum;
         }
 
         public override IEnumerable<CausalEdge> GetEdges() => _edges;

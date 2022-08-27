@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CausalGeneration.Nests;
+using CausalGeneration.Nodes;
 
 namespace CausalGeneration
 {
@@ -21,7 +22,7 @@ namespace CausalGeneration
     /// весов.
     /// </summary>
     /// <typeparam name = "TNodeValue">Тип значения, которое узел содержит</typeparam>
-    public class CausalModelNode<TNodeValue>
+    public class CausalModelNode<TNodeValue> : IHappenable
     {
         public CausalModelNode(Guid id, ProbabilityNest probabilityNest,
             TNodeValue? value = default(TNodeValue))
@@ -59,12 +60,14 @@ namespace CausalGeneration
         /// <summary>
         /// true, если событие входит в результирующую модель
         /// </summary>
-        internal bool? IsHappened { get; set; }
+        bool? IHappenable.IsHappened { get; set; }
 
         /// <summary>
         /// true, если для узла уже определена глубина
         /// </summary>
         internal bool HasLevel { get; set; }
         #endregion
+
+        public override string? ToString() => Value?.ToString() ?? Id.ToString();
     }
 }

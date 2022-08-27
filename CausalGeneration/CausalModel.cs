@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 using CausalGeneration.Nests;
+using CausalGeneration.Nodes;
 
 namespace CausalGeneration
 {
@@ -105,9 +106,9 @@ namespace CausalGeneration
         public ValidationResult Generate()
         {
             // Проверить корректность
-            ValidationResult res = ValidateModel();
-            if (!res.Succeeded)
-                return res;
+            //ValidationResult res = ValidateModel();
+            //if (!res.Succeeded)
+            //    return res;
 
             // Представить модель в вид, пригодный для генерации
             Preparate();
@@ -137,6 +138,8 @@ namespace CausalGeneration
                 {
                     if (edge.CauseId is null)
                         continue;
+
+                    // Причины берутся по id заранее для всех последующих генераций
                     // Todo: если элемент с таким id не существует - ошибка
                     edge.Cause = Nodes.First(x => x.Id == edge.CauseId);
                     if (edge.Cause is null)
@@ -152,7 +155,7 @@ namespace CausalGeneration
                 if (node.HasLevel)
                     continue;
 
-                int nodeLevel = DefineLevel(node);
+                int nodeLevel = DefineDepth(node);
 
                 if (!_levelModel.ContainsKey(nodeLevel))
                 {
@@ -193,7 +196,7 @@ namespace CausalGeneration
         //        _modelDepth = node.Level;
         //}
 
-        private int DefineLevel(CausalModelNode<TNodeValue> node)
+        private int DefineDepth(CausalModelNode<TNodeValue> node)
         {
             int maxCauseLevel = -1;
             // Если ни одно ребро не ссылается на узел модели
@@ -207,7 +210,7 @@ namespace CausalGeneration
 
                     var cause = ((CausalModelNode<TNodeValue>)(edge.Cause));
 
-                    int causeLevel = DefineLevel(cause);
+                    int causeLevel = DefineDepth(cause);
                     if (causeLevel > maxCauseLevel)
                         maxCauseLevel = causeLevel;
                 }
@@ -231,8 +234,7 @@ namespace CausalGeneration
         private void LevelTrace()
         {
             if (_levelModel is null)
-                throw new InvalidOperationException("Перед генерацией модель "
-                    + "не разложена по уровням");
+                throw new InvalidOperationException("Модель не подготовлена для обхода по уровням");
 
             // Узлы, представляющие события, удовлетворяющие первому условию существования
             // в моделируемой ситуации
@@ -248,7 +250,7 @@ namespace CausalGeneration
                 {
                     DefineNode(node);
                 }
-
+                
                 // Выбрать узлы, удовлетворяющие первому условию существования,
                 // пока что пропуская варианты реализаций
                 foreach (var node in level.Value)
@@ -264,7 +266,7 @@ namespace CausalGeneration
                             x.Id == implNode.AbstractNodeId);
                         if (_implementationGroups.ContainsKey(abstractEntity))
                         {
-                            _implementationGroups[implNode].Add(implNode);
+                            _implementationGroups[abstractEntity].Add(implNode);
                         }
                         else
                         {
@@ -274,6 +276,7 @@ namespace CausalGeneration
                     }
                     else
                     {
+                        ((IHappenable)node).IsHappened = true;
                         happened.Add(node);
                     }
                 }
@@ -285,13 +288,22 @@ namespace CausalGeneration
             foreach ((var abstrEntity, var group) in _implementationGroups)
             {
                 // Выбрать единственную реализацию из группы
-                happened.Add(SelectImplementation(group));
-            }
+                var oneNode = SelectImplementation(group);
 
+                // Узел остался без реализации, это нормально
+                if (oneNode is null)
+                    continue;
+
+                ((IHappenable)oneNode).IsHappened = true;
+                happened.Add(oneNode);
+            }
+            
             Nodes = happened;
         }
 
-        private ImplementationNode<TNodeValue> SelectImplementation(
+        // Todo: варианты с нулевым весом не учитываются
+        // Todo: что, если не осталось ни одного ребра?
+        private ImplementationNode<TNodeValue>? SelectImplementation(
             List<ImplementationNode<TNodeValue>> nodes)
         {
             Random rnd = new Random();

@@ -49,30 +49,10 @@ namespace CausalGeneration.Tests
             }
         }
 
-        //[Fact]
-        //public void LevelModelTest()
-        //{
-        //    // Arrange
-        //    CausalModel<string> model = new CausalModel<string>();
-        //    var hobbyRoot = new CausalModelNode<string>(new ProbabilityNest(null, 1),
-        //        "Hobby");
-        //    var drawingNest = new ProbabilityNest(hobbyRoot.Id, 1);
-        //    var drawingNode = new CausalModelNode<string>(drawingNest);
-        //    model.AddNodes(drawingNode, hobbyRoot);
-
-        //    // Act
-        //    model.Generate();
-
-        //    // Assert
-        //    Assert.NotNull(model.LevelModel);
-        //    if (model.LevelModel is not null)
-        //        Assert.Equal(2, model.LevelModel.Count);
-        //}
-
         [Fact]
         public void TestTemplate()
         {
-
+            
         }
 
     }
