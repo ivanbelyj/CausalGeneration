@@ -24,13 +24,13 @@ void Test1()
         model.AddNode(new ProbabilityNest(hobbyRoot.Id, 0.5), hobbyName);
     }
 
-    var conlangHobby = model.AddNode(new ProbabilityNest(hobbyRoot.Id, 0.3),
+    var conlangHobby = model.AddNode(new ProbabilityNest(hobbyRoot.Id, 1),
         "Создание языков");
 
     foreach (string nodeValue in new string[] { "Создал 1 язык",
         "Разбирается в лингвистике", "Говорит на нескольких языках" })
     {
-        model.AddNode(new ProbabilityNest(conlangHobby.Id, 0.7), nodeValue);
+        model.AddNode(new ProbabilityNest(conlangHobby.Id, 0.4), nodeValue);
     }
 
     // Раса напрямую связана с бытием существа,

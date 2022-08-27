@@ -257,7 +257,10 @@ namespace CausalGeneration
                 {
                     // Необходимое условие существования для любого узла
                     if (!node.ProbabilityNest.IsHappened())
+                    {
+                        ((IHappenable)node).IsHappened = false;
                         continue;
+                    }
 
                     // Реализации АС, удовл. 1-му усл., откладываются в словарь
                     if (node is ImplementationNode<TNodeValue> implNode)
@@ -294,7 +297,6 @@ namespace CausalGeneration
                 if (oneNode is null)
                     continue;
 
-                ((IHappenable)oneNode).IsHappened = true;
                 happened.Add(oneNode);
             }
             
@@ -322,6 +324,12 @@ namespace CausalGeneration
                     curNodeIndex = 0;
 
                 choice -= nodes[curNodeIndex].WeightNest.TotalWeight();
+            }
+
+            // Для узлов группы отмечается, произошел ли каждый из них
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                ((IHappenable)nodes[curNodeIndex]).IsHappened = (i == curNodeIndex);
             }
             return nodes[curNodeIndex];
         }
