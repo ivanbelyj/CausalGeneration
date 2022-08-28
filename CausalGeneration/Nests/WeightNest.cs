@@ -11,6 +11,7 @@ namespace CausalGeneration.Nests
     public class WeightNest : Nest
     {
         private List<WeightEdge> _edges { get; } = new List<WeightEdge>();
+        public List<WeightEdge> Weights => _edges;
 
         public WeightNest(params WeightEdge[] edges)
         {

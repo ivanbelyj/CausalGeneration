@@ -56,6 +56,12 @@ namespace CausalGeneration
         #endregion
 
         #region Json
+        // Todo: сериализация / десериализация
+        // Проблема связана с полиморфизмом следующих классов
+        // CausesExpression => And, Or, Edge, Not
+        // (Nest - no)
+        // (CausalEdge - no)
+        // CausalModelNode => ImplementationNode
 
         public string ToJson(bool writeIndented = false)
         {
@@ -63,6 +69,7 @@ namespace CausalGeneration
             {
                 Formatting = writeIndented ? Formatting.Indented : Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.Auto
             };
             return JsonConvert.SerializeObject(this, settings);
         }
@@ -71,9 +78,7 @@ namespace CausalGeneration
         {
             JsonSerializerSettings settings = new JsonSerializerSettings()
             {
-                // PropertyNameCaseInsensitive = true,
-                // ReadCommentHandling = 
-                // AllowTrailingCommas = true,
+                TypeNameHandling = TypeNameHandling.Auto,
             };
             
             var model = JsonConvert.DeserializeObject<CausalModel<TNodeValue>>(jsonString,

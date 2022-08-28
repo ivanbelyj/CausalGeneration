@@ -20,6 +20,11 @@ namespace CausalGeneration
     {
         public WeightNest WeightNest { get; set; }
         public Guid AbstractNodeId { get; set; }
+
+        // Для десериализации
+        public ImplementationNode() : base() {
+            WeightNest = new WeightNest();
+        }
         public ImplementationNode(Guid id, Guid abstractNodeId, WeightNest weightNest,
             TNodeValue? value = default(TNodeValue), ProbabilityNest? probabilityNest = null)
             : base(id, probabilityNest ?? new ProbabilityNest(null, 1), value)

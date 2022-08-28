@@ -57,15 +57,18 @@ void Test1()
     //    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
     //};
 
-    Generate(model, "new-model");
-    //string modelStr = ToFile(model, "serialized-model");
-    //var deserializedModel = CausalModel<string>.FromJson(modelStr);
-    //if (deserializedModel == null)
-    //    throw new Exception("Не удалось десериализовать модель.");
-    //Generate(deserializedModel, "deserialized-model");
+    // Generate(model, "new-model");
+    string modelStr = ToFile(model, "serialized-model");
+    var deserializedModel = CausalModel<string>.FromJson(modelStr);
+    if (deserializedModel == null)
+        throw new Exception("Не удалось десериализовать модель.");
+    // Generate(deserializedModel, "deserialized-model");
+    // ToFile(deserializedModel, "deserialized-model");
+
+    ToFileAndGenerate(deserializedModel, "deserialized-model");
 }
 
-void Generate<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+void ToFileAndGenerate<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {
     ToFile(model, fileName);
 

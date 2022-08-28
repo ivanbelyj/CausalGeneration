@@ -26,7 +26,6 @@ namespace CausalGeneration.Edges
         /// В более старом варианте может именоваться как Actual Probability
         /// Может принимать значение null, например, до генерации
         /// </summary>
-        [JsonIgnore]
         public double? FixingValue { get; set; }
 
         public ProbabilityEdge(double probability, Guid? causeId = null,
