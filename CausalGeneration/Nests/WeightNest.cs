@@ -38,7 +38,6 @@ namespace CausalGeneration.Nests
 
             double weightSum = 0;
 
-            // Todo: total weight
             foreach (var edge in _edges)
             {
                 var cause = (IHappenable?)edge.Cause;

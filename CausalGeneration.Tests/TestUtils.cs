@@ -32,7 +32,6 @@ namespace CausalGeneration.Tests
         {
             var rootNode = NodeUtils.CreateNode(1, "root", null);
 
-            // Todo: Вот здесь теряется causeId
             var notRootEdge = new ProbabilityEdge(1, rootNode.Id);
 
             var expression1 = Expressions.Or(notRootEdge, new ProbabilityEdge(1, null));

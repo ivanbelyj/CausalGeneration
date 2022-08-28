@@ -37,7 +37,6 @@ namespace CausalGeneration
             Nodes.Add(node);
             return node;
         }
-        
 
         public void AddVariantsGroup(CausalModelNode<TNodeValue> abstractNode,
             params TNodeValue[] implementations)
@@ -56,11 +55,10 @@ namespace CausalGeneration
         #endregion
 
         #region Json
-        // Todo: сериализация / десериализация
-        // Проблема связана с полиморфизмом следующих классов
+        // Полиморфная сериализация/десериализация необходима для
         // CausesExpression => And, Or, Edge, Not
-        // (Nest - no)
-        // (CausalEdge - no)
+        // (Nest - нет)
+        // (CausalEdge - нет)
         // CausalModelNode => ImplementationNode
 
         public string ToJson(bool writeIndented = false)
@@ -69,7 +67,8 @@ namespace CausalGeneration
             {
                 Formatting = writeIndented ? Formatting.Indented : Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = new KnownTypesSerializationBinder<TNodeValue>()
             };
             return JsonConvert.SerializeObject(this, settings);
         }
@@ -79,6 +78,7 @@ namespace CausalGeneration
             JsonSerializerSettings settings = new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = new KnownTypesSerializationBinder<TNodeValue>()
             };
             
             var model = JsonConvert.DeserializeObject<CausalModel<TNodeValue>>(jsonString,

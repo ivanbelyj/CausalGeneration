@@ -1,5 +1,4 @@
 ﻿using CausalGeneration.Edges;
-using JsonSubTypes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
