@@ -49,6 +49,9 @@ namespace CausalGeneration.Tests
             }
         }
 
+        // Todo: сериализация / десериализация
+        // Todo: 
+
         [Fact]
         public void TestTemplate()
         {

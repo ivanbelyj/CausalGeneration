@@ -24,6 +24,8 @@ namespace CausalGeneration
     /// <typeparam name = "TNodeValue">Тип значения, которое узел содержит</typeparam>
     public class CausalModelNode<TNodeValue> : IHappenable
     {
+        // Для десериализации
+        public CausalModelNode() : this(new ProbabilityNest()) { }
         public CausalModelNode(Guid id, ProbabilityNest probabilityNest,
             TNodeValue? value = default(TNodeValue))
         {

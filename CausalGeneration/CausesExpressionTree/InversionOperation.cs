@@ -15,11 +15,18 @@ namespace CausalGeneration.CausesExpressionTree
             _expression = expression;
         }
 
-        public override IEnumerable<ProbabilityEdge> Edges => _expression.Edges;
+        public override IEnumerable<ProbabilityEdge> GetEdges() => _expression.GetEdges();
 
-        public override bool Evaluate()
+        public override bool EvaluateNecessary()
         {
-            return !_expression.Evaluate();
+            return !_expression.EvaluateNecessary();
         }
+        public override bool EvaluateSufficient()
+        {
+            return !_expression.EvaluateSufficient();
+        }
+
+        // Todo: нужно ли переопределять Evaluate() ?
+        public override bool Evaluate() => EvaluateNecessary() || EvaluateSufficient();
     }
 }

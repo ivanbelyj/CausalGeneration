@@ -5,24 +5,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 using CausalGeneration.Nests;
 using CausalGeneration.Nodes;
+using Newtonsoft.Json;
 
 namespace CausalGeneration
 {
     public class CausalModel<TNodeValue>
     {
-        public List<CausalModelNode<TNodeValue>> Nodes { get; set; }
+        // Todo: можно добавить reference resolving, тогда можно будет хранить почти везде
+        // непосредственно ссылки вместо id
+        public HashSet<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
-        // Todo: Методы для определения и построения модели
         #region ModelCreation
         public CausalModel()
         {
-            Nodes = new List<CausalModelNode<TNodeValue>>();
+            Nodes = new HashSet<CausalModelNode<TNodeValue>>();
         }
 
         public void AddNodes(params CausalModelNode<TNodeValue>[] nodes)
@@ -55,39 +55,29 @@ namespace CausalGeneration
 
         #endregion
 
-        // Todo: Сериализация / десериализация
         #region Json
-        public async Task ToJsonAsync(Stream stream, bool writeIndented = false)
-        {
-            JsonSerializerOptions options = new JsonSerializerOptions()
-            {
-                WriteIndented = writeIndented,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-            };
-            await JsonSerializer.SerializeAsync(stream, this, options);
-        }
 
         public string ToJson(bool writeIndented = false)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions()
+            JsonSerializerSettings settings = new JsonSerializerSettings()
             {
-                WriteIndented = writeIndented,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+                Formatting = writeIndented ? Formatting.Indented : Formatting.None,
+                NullValueHandling = NullValueHandling.Ignore,
             };
-            return JsonSerializer.Serialize(this, options);
+            return JsonConvert.SerializeObject(this, settings);
         }
 
         public static CausalModel<TNodeValue>? FromJson(string jsonString)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions()
+            JsonSerializerSettings settings = new JsonSerializerSettings()
             {
-                PropertyNameCaseInsensitive = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                AllowTrailingCommas = true,
+                // PropertyNameCaseInsensitive = true,
+                // ReadCommentHandling = 
+                // AllowTrailingCommas = true,
             };
-            var model = JsonSerializer.Deserialize<CausalModel<TNodeValue>>(jsonString);
+            
+            var model = JsonConvert.DeserializeObject<CausalModel<TNodeValue>>(jsonString,
+                settings);
             return model;
         }
         #endregion
@@ -122,7 +112,7 @@ namespace CausalGeneration
         /// <summary>
         /// Разложение модели по уровням. Индекс - уровень, значение - узлы уровня.
         /// </summary>
-        private Dictionary<int, List<CausalModelNode<TNodeValue>>>? _levelModel;
+        private Dictionary<int, HashSet<CausalModelNode<TNodeValue>>>? _levelModel;
 
         /// <summary>
         /// Этап предварительной подготовки данных для любых последующих генераций.
@@ -147,7 +137,7 @@ namespace CausalGeneration
                 }
             }
 
-            _levelModel = new Dictionary<int, List<CausalModelNode<TNodeValue>>>();
+            _levelModel = new Dictionary<int, HashSet<CausalModelNode<TNodeValue>>>();
             // Для каждого узла определяется уровень
             foreach (var node in Nodes)
             {
@@ -159,7 +149,7 @@ namespace CausalGeneration
 
                 if (!_levelModel.ContainsKey(nodeLevel))
                 {
-                    _levelModel[nodeLevel] = new List<CausalModelNode<TNodeValue>>();
+                    _levelModel[nodeLevel] = new HashSet<CausalModelNode<TNodeValue>>();
                 }
                 _levelModel[nodeLevel].Add(node);
             }
@@ -225,8 +215,8 @@ namespace CausalGeneration
         /// совокупности их реализаций. В список включаются узлы, удовлетворяющие первому
         /// условию, это определяется в LevelTrace().
         /// </summary>
-        private Dictionary<CausalModelNode<TNodeValue>, List<ImplementationNode<TNodeValue>>>?
-            _implementationGroups;
+        //private Dictionary<CausalModelNode<TNodeValue>, HashSet<ImplementationNode<TNodeValue>>>?
+        //    _implementationGroups;
 
         /// <summary>
         /// На основе подготовленных данных обходит модель и генерирует результирующую
@@ -236,77 +226,92 @@ namespace CausalGeneration
             if (_levelModel is null)
                 throw new InvalidOperationException("Модель не подготовлена для обхода по уровням");
 
-            // Узлы, представляющие события, удовлетворяющие первому условию существования
-            // в моделируемой ситуации
-            var happened = new List<CausalModelNode<TNodeValue>>();
+            var happened = new HashSet<CausalModelNode<TNodeValue>>();
 
-            _implementationGroups = new Dictionary<CausalModelNode<TNodeValue>,
-                    List<ImplementationNode<TNodeValue>>>();
-
-            foreach (var level in _levelModel)
+            foreach ((var levelDepth, var level) in _levelModel)
             {
-                // Определить узлы уровня
-                foreach (var node in level.Value)
+                // Определить узлы уровня для выполнения условия
+                foreach (var node in level)
                 {
                     DefineNode(node);
                 }
-                
-                // Выбрать узлы, удовлетворяющие первому условию существования,
-                // пока что пропуская варианты реализаций
-                foreach (var node in level.Value)
-                {
-                    // Необходимое условие существования для любого узла
-                    if (!node.ProbabilityNest.IsHappened())
-                    {
-                        ((IHappenable)node).IsHappened = false;
-                        continue;
-                    }
 
-                    // Реализации АС, удовл. 1-му усл., откладываются в словарь
-                    if (node is ImplementationNode<TNodeValue> implNode)
-                    {
-                        CausalModelNode<TNodeValue> abstractEntity = Nodes.First(x =>
-                            x.Id == implNode.AbstractNodeId);
-                        if (_implementationGroups.ContainsKey(abstractEntity))
-                        {
-                            _implementationGroups[abstractEntity].Add(implNode);
-                        }
-                        else
-                        {
-                            _implementationGroups.Add(abstractEntity,
-                                new List<ImplementationNode<TNodeValue>>() { implNode });
-                        }
-                    }
-                    else
+                // Выбрать узлы, для которых выполнено необходимое условие (т.е., кроме условия
+                // выбора единственной реализации)
+                var necessary = new HashSet<CausalModelNode<TNodeValue>>();
+                foreach (var node in level)
+                {
+                    // Гарантированно непроизошедшее
+                    if (!node.ProbabilityNest.IsHappened())
+                        continue;
+
+                    // Необходимое условие выполнено, однако узел может оказаться
+                    // невыбранной реализацией
+                    necessary.Add(node);
+                    // Если это не вариант реализации - условий для сущестования достаточно
+                    if (!(node is ImplementationNode<TNodeValue>))
                     {
                         ((IHappenable)node).IsHappened = true;
-                        happened.Add(node);
                     }
                 }
-            }
 
-            // Группы реализаций могут простираться по любым уровням,
-            // однако требуется сделать выбор единственного варианта в момент, когда
-            // первое условие существования уже определено для всех вариантов.
-            foreach ((var abstrEntity, var group) in _implementationGroups)
-            {
-                // Выбрать единственную реализацию из группы
-                var oneNode = SelectImplementation(group);
+                // После отбрасывания того, что точно не произошло, можно получить
+                // все группы вариантов и определить их одним разом.
+                // Группа может простираться лишь по одному уровню, поэтому ее возможно получить
+                var implGroups = GetLevelImplementationGroups(necessary);
+                foreach ((var abstrEntity, var group) in implGroups)
+                {
+                    // Выбрать единственную реализацию из группы
+                    var oneNode = SelectImplementation(group.ToArray());
 
-                // Узел остался без реализации, это нормально
-                if (oneNode is null)
-                    continue;
+                    // Узел остался без реализации, это нормально
+                    if (oneNode is null)
+                        continue;
+                    ((IHappenable)oneNode).IsHappened = true;
+                    // Остальные варианты остаются непомеченными
+                }
 
-                happened.Add(oneNode);
+                // Окончательная выборка
+                foreach (var node in necessary)
+                    if (((IHappenable)node).IsHappened ?? false)
+                        happened.Add(node);
             }
             
             Nodes = happened;
         }
 
+        private Dictionary<CausalModelNode<TNodeValue>,
+            HashSet<ImplementationNode<TNodeValue>>>
+            GetLevelImplementationGroups(HashSet<CausalModelNode<TNodeValue>> level)
+        {
+            var res = new Dictionary<CausalModelNode<TNodeValue>,
+            HashSet<ImplementationNode<TNodeValue>>>();
+            foreach (var node in level)
+            {
+                // Реализации АС, удовл. усл., откладываются в словарь
+                // для быстрого получения всей группы
+                if (node is ImplementationNode<TNodeValue> implNode)
+                {
+                    CausalModelNode<TNodeValue> abstractEntity = Nodes.First(x =>
+                        x.Id == implNode.AbstractNodeId);
+                    if (res.ContainsKey(abstractEntity))
+                    {
+                        res[abstractEntity].Add(implNode);
+                    }
+                    else
+                    {
+                        res.Add(abstractEntity,
+                            new HashSet<ImplementationNode<TNodeValue>>() { implNode });
+                    }
+                }
+            }
+            return res;
+        }
+
         // Todo: варианты с нулевым весом не учитываются
         // Todo: что, если не осталось ни одного ребра?
         private ImplementationNode<TNodeValue>? SelectImplementation(
-            List<ImplementationNode<TNodeValue>> nodes)
+            ImplementationNode<TNodeValue>[] nodes)
         {
             Random rnd = new Random();
 
@@ -320,16 +325,10 @@ namespace CausalGeneration
             while (choice >= 0)
             {
                 curNodeIndex++;
-                if (curNodeIndex >= nodes.Count)
+                if (curNodeIndex >= nodes.Length)
                     curNodeIndex = 0;
 
                 choice -= nodes[curNodeIndex].WeightNest.TotalWeight();
-            }
-
-            // Для узлов группы отмечается, произошел ли каждый из них
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                ((IHappenable)nodes[curNodeIndex]).IsHappened = (i == curNodeIndex);
             }
             return nodes[curNodeIndex];
         }

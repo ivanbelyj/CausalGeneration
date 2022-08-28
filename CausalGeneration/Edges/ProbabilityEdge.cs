@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace CausalGeneration.Edges
         /// В более старом варианте может именоваться как Actual Probability
         /// Может принимать значение null, например, до генерации
         /// </summary>
+        [JsonIgnore]
         public double? FixingValue { get; set; }
 
         public ProbabilityEdge(double probability, Guid? causeId = null,

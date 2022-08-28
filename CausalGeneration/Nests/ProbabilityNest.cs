@@ -20,6 +20,8 @@ namespace CausalGeneration.Nests
         /// </summary>
         public CausesExpression CausesExpression { get; set; }
 
+        // Для десериализации
+        public ProbabilityNest() : this(null) { }
         public ProbabilityNest(CausesExpression expression)
         {
             CausesExpression = expression;
@@ -40,8 +42,10 @@ namespace CausalGeneration.Nests
         /// </summary>
         public bool IsHappened() => CausesExpression.Evaluate();
 
+        public bool IsHappenedNecessary() => CausesExpression.EvaluateNecessary();
+
         public override IEnumerable<ProbabilityEdge> GetEdges()
-            => CausesExpression.Edges;
+            => CausesExpression.GetEdges();
 
         //public override void DiscardEdge(Guid causeId)
         //{

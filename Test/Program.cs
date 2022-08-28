@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using CausalGeneration;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
+﻿using CausalGeneration;
 using CausalGeneration.CausesExpressionTree;
 using CausalGeneration.Edges;
 using CausalGeneration.Nests;
@@ -14,6 +10,7 @@ bool endDebug = true;
 
 void Test1()
 {
+    // Следующая модель генерации персонажа используется исключительно для теста и демонстрации
     CausalModel<string> model = new CausalModel<string>();
     CausalModelNode<string> hobbyRoot = model.AddNode(new ProbabilityNest(null, 0.9),
         "Хобби");
@@ -24,13 +21,24 @@ void Test1()
         model.AddNode(new ProbabilityNest(hobbyRoot.Id, 0.5), hobbyName);
     }
 
-    var conlangHobby = model.AddNode(new ProbabilityNest(hobbyRoot.Id, 1),
+    var educationNode = NodeUtils.CreateNode(1, "Образование", null);
+    model.AddVariantsGroup(educationNode, "компьютерные науки", "история", "математика");
+    var linguisticsNode = NodeUtils.CreateImplementation(educationNode.Id, 2, "лингвистика");
+    model.Nodes.Add(linguisticsNode);
+
+    var conlangHobby = model.AddNode(new ProbabilityNest(hobbyRoot.Id, 0.3),
         "Создание языков");
 
-    foreach (string nodeValue in new string[] { "Создал 1 язык",
-        "Разбирается в лингвистике", "Говорит на нескольких языках" })
+    foreach (string nodeValue in new string[] {  "Разбирается в лингвистике",
+        "Говорит на нескольких языках" })
     {
-        model.AddNode(new ProbabilityNest(conlangHobby.Id, 0.4), nodeValue);
+        // model.AddNode(new ProbabilityNest(conlangHobby.Id, 0.4), nodeValue);
+        // Если персонаж - лингвист, вероятность повышается
+        var linguisticsEdge = new ProbabilityEdge(1, linguisticsNode.Id);
+        // Хобби создание языков тоже повышает вероятность
+        var conlangEdge = new ProbabilityEdge(0.5, conlangHobby.Id);
+        var node = NodeUtils.CreateNodeWithOr(nodeValue, linguisticsEdge, conlangEdge);
+        model.Nodes.Add(node);
     }
 
     // Раса напрямую связана с бытием существа,
@@ -40,7 +48,7 @@ void Test1()
     CausalModelNode<string> raceNode = NodeUtils.CreateNode(1, "Раса", null);
     model.AddVariantsGroup(raceNode, "тшэайская", "мэрайская", "мйеурийская", "эвойская");
 
-    Generate(model, "new-model");
+    // Generate(model, "new-model");
 
     //JsonSerializerOptions options = new JsonSerializerOptions()
     //{
@@ -49,8 +57,9 @@ void Test1()
     //    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  // Кириллица
     //};
 
-    //Generate(model, "model");
-    //var deserializedModel = CausalModel<string>.FromJson(model.ToJson());
+    Generate(model, "new-model");
+    //string modelStr = ToFile(model, "serialized-model");
+    //var deserializedModel = CausalModel<string>.FromJson(modelStr);
     //if (deserializedModel == null)
     //    throw new Exception("Не удалось десериализовать модель.");
     //Generate(deserializedModel, "deserialized-model");
@@ -72,7 +81,7 @@ void Generate<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
     ToFile(model, fileName + ".generated");
 }
 
-void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+string ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
 {
     string jsonString = model.ToJson(true);
     if (!fileName.EndsWith(".json"))
@@ -80,4 +89,5 @@ void ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
         fileName += ".json";
     }
     File.WriteAllText(fileName, jsonString);
+    return jsonString;
 }

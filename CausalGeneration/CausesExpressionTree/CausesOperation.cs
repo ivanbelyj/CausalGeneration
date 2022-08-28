@@ -1,4 +1,6 @@
 ﻿using CausalGeneration.Edges;
+using JsonSubTypes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,9 @@ namespace CausalGeneration.CausesExpressionTree
     /// Представляет операцию логической группировки причинных связей узлов.
     /// Операция может принимать множество аргументов
     /// </summary>
+    [JsonConverter(typeof(JsonSubtypes), "type")]
+    [JsonSubtypes.KnownSubType(typeof(ConjunctionOperation), "and")]
+    [JsonSubtypes.KnownSubType(typeof(DisjunctionOperation), "or")]
     public abstract class CausesOperation : CausesExpression
     {
         public CausesOperation(IEnumerable<CausesExpression> operands)
@@ -20,17 +25,14 @@ namespace CausalGeneration.CausesExpressionTree
         }
 
         public IEnumerable<CausesExpression> Operands { get; set; }
-        public override IEnumerable<ProbabilityEdge> Edges
+        public override IEnumerable<ProbabilityEdge> GetEdges()
         {
-            get
+            List<ProbabilityEdge> edges = new List<ProbabilityEdge>();
+            foreach (CausesExpression operand in Operands)
             {
-                List<ProbabilityEdge> edges = new List<ProbabilityEdge>();
-                foreach (CausesExpression operand in Operands)
-                {
-                    edges.AddRange(operand.Edges);
-                }
-                return edges;
+                edges.AddRange(operand.GetEdges());
             }
+            return edges;
         }
         //public override void Discard(Guid edgeId)
         //{

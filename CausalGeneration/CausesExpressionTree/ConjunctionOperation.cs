@@ -10,11 +10,23 @@ namespace CausalGeneration.CausesExpressionTree
     public class ConjunctionOperation : CausesOperation
     {
         public ConjunctionOperation(IEnumerable<CausesExpression> operands) : base(operands) { }
-        public override bool Evaluate()
+        //public override bool EvaluateNecessary()
+        //{
+        //    foreach (CausesExpression term in Operands)
+        //    {
+        //        if (!term.EvaluateNecessary())
+        //            return false;
+        //    }
+        //    return true;
+        //}
+        public override bool EvaluateNecessary() => And(expr => expr.EvaluateNecessary());
+        public override bool EvaluateSufficient() => And(expr => expr.EvaluateSufficient());
+
+        private bool And(Predicate<CausesExpression> predicate)
         {
-            foreach (CausesExpression term in Operands)
+            foreach (CausesExpression operand in Operands)
             {
-                if (!term.Evaluate())
+                if (!predicate(operand))
                     return false;
             }
             return true;
