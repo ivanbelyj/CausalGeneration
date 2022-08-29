@@ -38,7 +38,8 @@ namespace CausalGeneration.Tests
 
             // Assert
             Assert.Equal(races.Length + 1, model.Nodes.Count);
-            foreach (var node in model.Nodes) {
+            foreach (var node in model.Nodes)
+            {
                 if (node == abstractNode)
                     continue;
                 var nodeEdges = node.GetEdges();
@@ -49,13 +50,12 @@ namespace CausalGeneration.Tests
             }
         }
 
-        // Todo: сериализация / десериализация
-        // Todo: 
+        // Todo: Добавить тесты функциональности: сериализации / десериализации, и др
 
         [Fact]
         public void TestTemplate()
         {
-            
+
         }
 
     }

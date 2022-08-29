@@ -35,7 +35,6 @@ namespace CausalGeneration.CausesExpressionTree
             if (Edge.FixingValue is null)
                 throw new InvalidOperationException("Фиксирующее значение не установлено");
 
-            // Todo: Получить причину по Edge.CauseId и проверить, избрана ли она
             var cause = (IHappenable?)Edge.Cause;
 
             // if (cause is not null && cause.IsHappened is null)

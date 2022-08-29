@@ -230,7 +230,7 @@
       "WeightNest": {
         "Weights": [
           {
-            "Weight": 1.0,
+            "Weight": 0.7,
             "CauseId": "22d7f0b2-8618-48a2-a335-50c278e3ae18"
           }
         ]
@@ -241,7 +241,7 @@
         "CausesExpression": {
           "$type": "edge",
           "Edge": {
-            "Probability": 0.7
+            "Probability": 1
           }
         }
       },
@@ -252,7 +252,7 @@
       "WeightNest": {
         "Weights": [
           {
-            "Weight": 1.0,
+            "Weight": 2.5,
             "CauseId": "22d7f0b2-8618-48a2-a335-50c278e3ae18"
           }
         ]
@@ -263,7 +263,7 @@
         "CausesExpression": {
           "$type": "edge",
           "Edge": {
-            "Probability": 2.5
+            "Probability": 1
           }
         }
       },

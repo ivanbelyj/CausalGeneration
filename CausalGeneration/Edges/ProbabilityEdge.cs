@@ -13,20 +13,51 @@ namespace CausalGeneration.Edges
     /// </summary>
     public class ProbabilityEdge : CausalEdge
     {
+        private double _probability;
         /// <summary>
         /// Вероятность того, что причинно-следственная связь повлечет за собой <br/>
-        /// фактор события. Значение от 0 до 1.0 включительно <br />
+        /// фактор события. Значение от 0 (фактор не происходит никогда) до 1.0
+        /// (фактор происходит в любом случае)
+        /// включительно <br />
         /// </summary>
-        public double Probability { get; set; }
+        public double Probability
+        {
+            get => _probability;
+            set
+            {
+                if (value >= 0 && value <= 1.0)
+                {
+                    _probability = value;
+                }
+                else
+                    throw new ArgumentOutOfRangeException("",
+                        "Некорректное значение вероятности");
+            }
+        }
 
+        private double? _fixingValue;
         /// <summary>
         /// Значение, фиксирующее вероятность и определяющее, повлекла ли <br/>
         /// причинно-следственная связь за собой фактор события в текущей генерации. <br/>
-        /// Значение больше или равно 0 и строго меньше 1.0 <br />
-        /// В более старом варианте может именоваться как Actual Probability
+        /// Значение больше или равно 0 (фактор происходит при любой ненулевой вероятности)
+        /// и строго меньше 1.0 <br />
+        /// В более старых описаниях может именоваться как Actual Probability.
         /// Может принимать значение null, например, до генерации
         /// </summary>
-        public double? FixingValue { get; set; }
+        public double? FixingValue
+        {
+            get => _fixingValue;
+            set
+            {
+                if (value is null || value >= 0 && value < 1.0)
+                {
+                    _fixingValue = value;
+                }
+                else
+                    throw new ArgumentOutOfRangeException("",
+                        "Некорректное фиксирующее значение");
+            }
+        }
 
         public ProbabilityEdge(double probability, Guid? causeId = null,
             double? actualProbability = null)
@@ -46,11 +77,15 @@ namespace CausalGeneration.Edges
         /// <summary>
         /// Функция, определяющая, повлекла ли причинно-следственная связь за собой
         /// фактор события в текущей генерации при данных вероятности и фиксурующем
-        /// значении
+        /// значении. Значение вероятности превалирует над фиксирующим значением
+        /// (если вероятность определена как 0 или 1, любое фиксирующее значение не может
+        /// повлиять на исход фактора)
         /// </summary>
-        /// <param name="probability">Вероятность</param>
-        /// <param name="fixing">Фиксирующее значение</param>
-        /// <returns></returns>
+        /// <param name="probability">Вероятность, значение от 0 (связь не влечет за собой
+        /// фактор в любом случае) до 1 (связь влечет фактор в любом случае)
+        /// включительно</param>
+        /// <param name="fixing">Фиксирующее значение - от 0 включительно (фактор
+        /// происходит при любой ненулевой вероятности) до 1 невключительно</param>
         public static bool IsActuallyHappened(double probability, double fixing)
             => probability - fixing > 0;
     }
