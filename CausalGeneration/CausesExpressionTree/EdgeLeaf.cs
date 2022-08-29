@@ -21,7 +21,7 @@ namespace CausalGeneration.CausesExpressionTree
         {
             Edge = edge;
         }
-        public override bool EvaluateNecessary()
+        protected bool EvaluateNecessary()
         {
             if (Edge.FixingValue is null)
                 throw new InvalidOperationException("Фиксирующее значение не установлено");
@@ -30,7 +30,7 @@ namespace CausalGeneration.CausesExpressionTree
                 Edge.FixingValue.Value);
         }
 
-        public override bool EvaluateSufficient()
+        protected bool EvaluateSufficient()
         {
             if (Edge.FixingValue is null)
                 throw new InvalidOperationException("Фиксирующее значение не установлено");
@@ -48,5 +48,7 @@ namespace CausalGeneration.CausesExpressionTree
             //    Edge.FixingValue.Value);
             return condA; // && condB;
         }
+
+        public override bool Evaluate() => EvaluateNecessary() && EvaluateSufficient();
     }
 }

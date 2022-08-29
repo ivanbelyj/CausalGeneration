@@ -89,8 +89,17 @@ namespace CausalGeneration
 
         // Todo: Полная валидация модели
         #region Validation
+        /// <summary>
+        /// Проверяет, соответствует ли модель нижеперечисленным требованиям.
+        /// <list type="number">
+        ///     <item>требование</item>
+        ///     <item>требование</item>
+        /// </list>
+        /// </summary>
+        /// <returns></returns>
         public ValidationResult ValidateModel()
         {
+
             return ValidationResult.Success;
         }
 

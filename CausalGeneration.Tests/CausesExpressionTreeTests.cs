@@ -14,8 +14,8 @@ namespace CausalGeneration.Tests
             var falseEdge = TestUtils.NewFalseEdge();
             var trueEdge = TestUtils.NewTrueEdge();
 
-            Assert.False(new EdgeLeaf(falseEdge).EvaluateNecessary());
-            Assert.True(new EdgeLeaf(trueEdge).EvaluateNecessary());
+            Assert.False(new EdgeLeaf(falseEdge).Evaluate());
+            Assert.True(new EdgeLeaf(trueEdge).Evaluate());
         }
 
         [Fact]
@@ -27,10 +27,10 @@ namespace CausalGeneration.Tests
             var trueEdge = TestUtils.NewTrueEdge();
             var trueEdge1 = TestUtils.NewTrueEdge();
 
-            Assert.False(Expressions.And(falseEdge, falseEdge1).EvaluateNecessary());
-            Assert.False(Expressions.And(falseEdge, trueEdge).EvaluateNecessary());
-            Assert.False(Expressions.And(trueEdge, falseEdge1).EvaluateNecessary());
-            Assert.True(Expressions.And(trueEdge, trueEdge1).EvaluateNecessary());
+            Assert.False(Expressions.And(falseEdge, falseEdge1).Evaluate());
+            Assert.False(Expressions.And(falseEdge, trueEdge).Evaluate());
+            Assert.False(Expressions.And(trueEdge, falseEdge1).Evaluate());
+            Assert.True(Expressions.And(trueEdge, trueEdge1).Evaluate());
         }
 
         [Fact]
@@ -42,10 +42,10 @@ namespace CausalGeneration.Tests
             var trueEdge1 = TestUtils.NewTrueEdge();
 
 
-            Assert.False(Expressions.Or(falseEdge, falseEdge1).EvaluateNecessary());
-            Assert.True(Expressions.Or(falseEdge, trueEdge).EvaluateNecessary());
-            Assert.True(Expressions.Or(trueEdge, falseEdge1).EvaluateNecessary());
-            Assert.True(Expressions.Or(trueEdge, trueEdge1).EvaluateNecessary());
+            Assert.False(Expressions.Or(falseEdge, falseEdge1).Evaluate());
+            Assert.True(Expressions.Or(falseEdge, trueEdge).Evaluate());
+            Assert.True(Expressions.Or(trueEdge, falseEdge1).Evaluate());
+            Assert.True(Expressions.Or(trueEdge, trueEdge1).Evaluate());
         }
 
         [Fact]
@@ -54,8 +54,8 @@ namespace CausalGeneration.Tests
             var falseEdge = TestUtils.NewFalseEdge();
             var trueEdge = TestUtils.NewTrueEdge();
 
-            Assert.True(Expressions.Not(falseEdge).EvaluateNecessary());
-            Assert.False(Expressions.Not(trueEdge).EvaluateNecessary());
+            Assert.True(Expressions.Not(falseEdge).Evaluate());
+            Assert.False(Expressions.Not(trueEdge).Evaluate());
         }
 
 

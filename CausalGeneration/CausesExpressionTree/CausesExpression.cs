@@ -11,25 +11,20 @@ namespace CausalGeneration.CausesExpressionTree
     /// <summary>
     /// Представляет логическое выражение группировки причин.
     /// </summary>
-    //[JsonConverter(typeof(JsonSubtypes), "type")]
-    //[JsonSubtypes.KnownSubType(typeof(ConjunctionOperation), "and")]
-    //[JsonSubtypes.KnownSubType(typeof(DisjunctionOperation), "or")]
-    //[JsonSubtypes.KnownSubType(typeof(EdgeLeaf), "edge")]
-    //[JsonSubtypes.KnownSubType(typeof(InversionOperation), "not")]
     public abstract class CausesExpression
     {
         /// <summary>
         /// Получает конечное булевское значение минимальной единицы выражения -
         /// выполнено ли необходимое условие происшествия события (либо другого выражения)
         /// </summary>
-        public abstract bool EvaluateNecessary();
+        // public abstract bool EvaluateNecessary();
 
         /// <summary>
         /// true, если выполнено достаточное условие - произошли необходимые причинные события
         /// </summary>
-        public abstract bool EvaluateSufficient();
-        public virtual bool Evaluate() => EvaluateNecessary() && EvaluateSufficient();
-        
+        // public abstract bool EvaluateSufficient();
+        // public virtual bool Evaluate() => EvaluateNecessary() && EvaluateSufficient();
+        public abstract bool Evaluate();
 
         /// <summary>
         /// Ребра, включенные в логическое выражение. Требуется для генерации

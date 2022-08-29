@@ -30,12 +30,10 @@ namespace CausalGeneration.CausesExpressionTree
             }
             return edges;
         }
-        //public override void Discard(Guid edgeId)
-        //{
-        //    foreach (var operand in Operands)
-        //    {
-        //        operand.Discard(edgeId);
-        //    }
-        //}
+
+        public override bool Evaluate() =>
+            Operation(Operands.Select(expr => expr.Evaluate()).ToArray());
+
+        protected abstract bool Operation(bool[] operands);
     }
 }

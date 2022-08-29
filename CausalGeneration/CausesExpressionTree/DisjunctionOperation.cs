@@ -19,14 +19,15 @@ namespace CausalGeneration.CausesExpressionTree
         //    }
         //    return false;
         //}
-        public override bool EvaluateNecessary() => Or(expr => expr.EvaluateNecessary());
-        public override bool EvaluateSufficient() => Or(expr => expr.EvaluateSufficient());
+        // public override bool EvaluateNecessary() => Or(expr => expr.EvaluateNecessary());
+        // public override bool EvaluateSufficient() => Or(expr => expr.EvaluateSufficient());
+        // public override bool Evaluate() => Or(expr => expr.Evaluate());
 
-        private bool Or(Predicate<CausesExpression> predicate)
+        protected override bool Operation(bool[] operands)
         {
-            foreach (CausesExpression operand in Operands)
+            foreach (bool operand in operands)
             {
-                if (predicate(operand))
+                if (operand)
                     return true;
             }
             return false;

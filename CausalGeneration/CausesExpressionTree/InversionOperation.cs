@@ -17,16 +17,15 @@ namespace CausalGeneration.CausesExpressionTree
 
         public override IEnumerable<ProbabilityEdge> GetEdges() => _expression.GetEdges();
 
-        public override bool EvaluateNecessary()
-        {
-            return !_expression.EvaluateNecessary();
-        }
-        public override bool EvaluateSufficient()
-        {
-            return !_expression.EvaluateSufficient();
-        }
+        //public override bool EvaluateNecessary()
+        //{
+        //    return !_expression.EvaluateNecessary();
+        //}
+        //public override bool EvaluateSufficient()
+        //{
+        //    return !_expression.EvaluateSufficient();
+        //}
 
-        // Todo: нужно ли переопределять Evaluate() ?
-        public override bool Evaluate() => EvaluateNecessary() || EvaluateSufficient();
+        public override bool Evaluate() => !_expression.Evaluate();
     }
 }
