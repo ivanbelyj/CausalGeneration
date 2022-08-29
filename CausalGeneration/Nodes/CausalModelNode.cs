@@ -36,7 +36,7 @@ namespace CausalGeneration
         public CausalModelNode(ProbabilityNest probabilityNest,
             TNodeValue? value = default(TNodeValue))
                 : this(Guid.NewGuid(), probabilityNest, value) { }
-        
+
         public Guid Id { get; set; }
 
         public ProbabilityNest ProbabilityNest { get; set; }
@@ -62,7 +62,7 @@ namespace CausalGeneration
         /// <summary>
         /// true, если событие входит в результирующую модель
         /// </summary>
-        bool? IHappenable.IsHappened { get; set; }
+        bool IHappenable.IsHappened { get; set; }
 
         /// <summary>
         /// true, если для узла уже определена глубина

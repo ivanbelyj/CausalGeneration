@@ -43,7 +43,7 @@ namespace CausalGeneration.CausesExpressionTree
 
             // Исход ребер, не имеющих причин, зависит лишь от них самих
             bool condA = cause is null ||
-                (cause.IsHappened is not null && cause.IsHappened.Value);
+                (/*cause.IsHappened is not null && */cause.IsHappened);
             //bool condB = ProbabilityEdge.IsActuallyHappened(Edge.Probability,
             //    Edge.FixingValue.Value);
             return condA; // && condB;

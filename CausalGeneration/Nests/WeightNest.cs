@@ -49,11 +49,11 @@ namespace CausalGeneration.Nests
                     continue;
                 }
 
-                if (cause.IsHappened is null)
-                    throw new NullReferenceException("На этапе вычисления суммы весового гнезда "
-                        + " не было определено, произошло ли причинное событие");
+                //if (cause.IsHappened is null)
+                //    throw new NullReferenceException("На этапе вычисления суммы весового гнезда "
+                //        + " не было определено, произошло ли причинное событие");
 
-                if (cause.IsHappened.Value)
+                if (cause.IsHappened)
                     weightSum += edge.Weight;
             }
 

@@ -253,7 +253,7 @@ namespace CausalGeneration
 
                 // Окончательная выборка
                 foreach (var node in necessary)
-                    if (((IHappenable)node).IsHappened ?? false)
+                    if (((IHappenable)node).IsHappened)
                         happened.Add(node);
             }
 
@@ -288,7 +288,6 @@ namespace CausalGeneration
             return res;
         }
 
-        // Todo: варианты с нулевым весом не учитываются
         private ImplementationNode<TNodeValue>? SelectImplementation(
             ImplementationNode<TNodeValue>[] nodes)
         {

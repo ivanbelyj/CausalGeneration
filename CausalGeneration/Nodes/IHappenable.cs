@@ -15,6 +15,6 @@ namespace CausalGeneration.Nodes
         /// <summary>
         /// true, если сущность включена в окончательную выборку произошедшего
         /// </summary>
-        bool? IsHappened { get; set; }
+        bool IsHappened { get; set; }
     }
 }

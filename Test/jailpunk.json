@@ -268,8 +268,132 @@
         }
       },
       "Value": "Власть корпораций"
-    }
+    },
 
     // Выход из лабиринта
+    {
+      "Id": "b7e261b7-122b-4056-933f-27afffbb72a0",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Выход из лабиринта"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 2,
+            "CauseId": "b7e261b7-122b-4056-933f-27afffbb72a0"
+          }
+        ]
+      },
+      "AbstractNodeId": "b7e261b7-122b-4056-933f-27afffbb72a0",
+      "Id": "f7b5c413-e6c7-4242-9cee-b9c9869d6a36",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Только из комнат управления"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 2,
+            "CauseId": "b7e261b7-122b-4056-933f-27afffbb72a0"
+          }
+        ]
+      },
+      "AbstractNodeId": "b7e261b7-122b-4056-933f-27afffbb72a0",
+      "Id": "bfa2db9b-b6e9-436a-b327-31ba6eda41ad",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Из комнат управления, а также скрытый выход в лабиринте"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "b7e261b7-122b-4056-933f-27afffbb72a0"
+          }
+        ]
+      },
+      "AbstractNodeId": "b7e261b7-122b-4056-933f-27afffbb72a0",
+      "Id": "974e58b4-6af3-4d7d-9908-f150cb1c4a4d",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Выхода нет изначально"
+    },
+
+    // Знает ли персонал, что выхода изначально нет (если это так)?
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 2,
+            "CauseId": "974e58b4-6af3-4d7d-9908-f150cb1c4a4d"
+          }
+        ]
+      },
+      "AbstractNodeId": "974e58b4-6af3-4d7d-9908-f150cb1c4a4d",
+      "Id": "61103c37-b7f7-4004-8187-a86f5873d5cf",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Персонал знает, что выхода нет изначально, и идет на это"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "974e58b4-6af3-4d7d-9908-f150cb1c4a4d"
+          }
+        ]
+      },
+      "AbstractNodeId": "974e58b4-6af3-4d7d-9908-f150cb1c4a4d",
+      "Id": "eb6569f8-e7a0-4386-b6a4-2174fbf1d9a1",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Персонал не знает, что выхода нет изначально"
+    }
   ]
 }
