@@ -1,0 +1,275 @@
+﻿{
+  "Nodes": [
+    // Задумка создателей лабиринта
+    {
+      "Id": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1
+          }
+        }
+      },
+      "Value": "Задумка создателей"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "e53cb9dd-2fcc-4718-9e6a-c25bdb9a8c62",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Месть"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "11ab4ac9-4732-4e13-af6b-f78abe9053a5",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Жестокий эксперимент"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "a1621cdf-9973-4cab-be1a-a72c5fb17384",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Реалити-шоу"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "dfaa3bee-e499-439e-837c-f5a42628b1fd",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Развлечение маньяков"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "3f3a9385-1a4b-4f3c-bc27-8153f85d3a05",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Экстремальный отдых"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "b29cc5af-d565-4c82-8197-e46c7d22d49b",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Матрица"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "3c5f66ff-c90a-4e12-9575-ec4d97a504e3",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Секретная тюрьма"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a"
+          }
+        ]
+      },
+      "AbstractNodeId": "c4a104b9-1ade-4a6f-a72d-7e7b7397db1a",
+      "Id": "e1c72037-9dfa-4bec-9261-e11c2aab5455",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Специальная подготовка"
+    },
+
+    // Поворотное событие в мире, создавшее условия для эксперимента (опционально)
+    {
+      "Id": "22d7f0b2-8618-48a2-a335-50c278e3ae18",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 0.4
+          }
+        }
+      },
+      "Value": "Условия для эксперимента на уровне государства"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "22d7f0b2-8618-48a2-a335-50c278e3ae18"
+          }
+        ]
+      },
+      "AbstractNodeId": "22d7f0b2-8618-48a2-a335-50c278e3ae18",
+      "Id": "7ab288a1-6c8c-4d29-8af9-d6b062f56b56",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 1.0
+          }
+        }
+      },
+      "Value": "Анархия"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "22d7f0b2-8618-48a2-a335-50c278e3ae18"
+          }
+        ]
+      },
+      "AbstractNodeId": "22d7f0b2-8618-48a2-a335-50c278e3ae18",
+      "Id": "e960cfbb-bf64-4805-b4ae-8dec434b5713",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 0.7
+          }
+        }
+      },
+      "Value": "Нацизм"
+    },
+    {
+      "$type": "implementation",
+      "WeightNest": {
+        "Weights": [
+          {
+            "Weight": 1.0,
+            "CauseId": "22d7f0b2-8618-48a2-a335-50c278e3ae18"
+          }
+        ]
+      },
+      "AbstractNodeId": "22d7f0b2-8618-48a2-a335-50c278e3ae18",
+      "Id": "98490cb3-6954-4a3a-a5ad-fab21c5fd972",
+      "ProbabilityNest": {
+        "CausesExpression": {
+          "$type": "edge",
+          "Edge": {
+            "Probability": 2.5
+          }
+        }
+      },
+      "Value": "Власть корпораций"
+    }
+
+    // Выход из лабиринта
+  ]
+}

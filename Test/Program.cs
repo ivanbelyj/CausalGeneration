@@ -4,9 +4,18 @@ using CausalGeneration.Edges;
 using CausalGeneration.Nests;
 using CausalGeneration.Tests;
 
-Test1();
+// Test1();
+JailpunkTest();
 
-bool endDebug = true;
+void JailpunkTest()
+{
+    // Вставьте ваше расположение файла с сериализованной моделью
+    const string fileName = @"C:\Users\User\source\repos\CausalGeneration\Test\jailpunk.json";
+    string json = File.ReadAllText(fileName);
+    var causalModel = CausalModel<string>.FromJson(json);
+
+    causalModel.Generate();
+}
 
 void Test1()
 {

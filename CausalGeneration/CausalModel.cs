@@ -42,7 +42,7 @@ namespace CausalGeneration
             params TNodeValue[] implementations)
         {
             Nodes.Add(abstractNode);
-            
+
             foreach (var val in implementations)
             {
                 // WeightNest nest = new WeightNest(abstractNode.Id, 1);
@@ -80,7 +80,7 @@ namespace CausalGeneration
                 TypeNameHandling = TypeNameHandling.Auto,
                 SerializationBinder = new KnownTypesSerializationBinder<TNodeValue>()
             };
-            
+
             var model = JsonConvert.DeserializeObject<CausalModel<TNodeValue>>(jsonString,
                 settings);
             return model;
@@ -160,37 +160,6 @@ namespace CausalGeneration
             }
         }
 
-        //private int DefineLevel(CausalModelNode<TNodeValue> node)
-        //{
-        //    int maxCauseLevel = -1;
-        //    // Если ни одно ребро не ссылается на узел модели
-        //    if (!node.IsRootNode())
-        //    {
-        //        foreach (var edge in node.GetEdges())
-        //        {
-        //            // Некоторые ребра могут не иметь причин, это нормально
-        //            if (edge.Cause is null)
-        //                continue;
-
-        //            var cause = ((CausalModelNode<TNodeValue>)(edge.Cause));
-        //            DefineLevel(cause);
-        //            if (cause.Level is null)
-        //                throw new NullReferenceException("После процедуры определения "
-        //                    + "глубин уровень причины оказался неопределенным.");
-        //            int causeLevel = cause.Level.Value;
-
-        //            if (causeLevel > maxCauseLevel)
-        //                maxCauseLevel = causeLevel;
-        //        }
-        //    }
-
-        //    node.Level = maxCauseLevel + 1;
-
-        //    // Устанавливается глубина модели
-        //    if (node.Level > _modelDepth)
-        //        _modelDepth = node.Level;
-        //}
-
         private int DefineDepth(CausalModelNode<TNodeValue> node)
         {
             int maxCauseLevel = -1;
@@ -231,24 +200,30 @@ namespace CausalGeneration
             if (_levelModel is null)
                 throw new InvalidOperationException("Модель не подготовлена для обхода по уровням");
 
+            // Узлы, входящие в окончательную выборку произошедшего
             var happened = new HashSet<CausalModelNode<TNodeValue>>();
 
+            // Цикл проходит по уровням (их можно сравнить с хронологией событий)
+            // и выбирает то, что произошло
             foreach ((var levelDepth, var level) in _levelModel)
             {
-                // Определить узлы уровня для выполнения условия
+                // Определить узлы уровня для выполнения необходимого условия
                 foreach (var node in level)
                 {
                     DefineNode(node);
                 }
 
-                // Выбрать узлы, для которых выполнено необходимое условие (т.е., кроме условия
-                // выбора единственной реализации)
+                // Выбрать узлы, для которых выполнено необходимое условие (но не условие
+                // выбора единственной реализации, которое будет определено позже)
                 var necessary = new HashSet<CausalModelNode<TNodeValue>>();
                 foreach (var node in level)
                 {
                     // Гарантированно непроизошедшее
                     if (!node.ProbabilityNest.IsHappened())
+                    {
+                        ((IHappenable)node).IsHappened = false;
                         continue;
+                    }
 
                     // Необходимое условие выполнено, однако узел может оказаться
                     // невыбранной реализацией
@@ -281,7 +256,7 @@ namespace CausalGeneration
                     if (((IHappenable)node).IsHappened ?? false)
                         happened.Add(node);
             }
-            
+
             Nodes = happened;
         }
 
@@ -314,18 +289,33 @@ namespace CausalGeneration
         }
 
         // Todo: варианты с нулевым весом не учитываются
-        // Todo: что, если не осталось ни одного ребра?
         private ImplementationNode<TNodeValue>? SelectImplementation(
             ImplementationNode<TNodeValue>[] nodes)
         {
             Random rnd = new Random();
 
+            // Собрать информацию о узлах и их общих весах, собрать сумму весов,
+            // а также отбросить узлы с нулевыми весами
+            var nodesWeights = new List<(CausalModelNode<TNodeValue> node, double totalWeight)>();
+            double weightsSum = 0;
+            foreach (var node in nodes)
+            {
+                double totalWeight = node.WeightNest.TotalWeight();
+                if (totalWeight >= double.Epsilon)
+                {
+                    nodesWeights.Add((node, totalWeight));
+                    weightsSum += totalWeight;
+                }
+            }
+            if (weightsSum < double.Epsilon)
+                return null;
+
             // Сумма вероятностей для выбора единственной реализации
-            double probSum = nodes.Sum(node => node.WeightNest.TotalWeight());
+            // double weightsSum = nodes.Sum(node => node.WeightNest.TotalWeight());
 
             // Определить Id единственной реализации
             // Алгоритм Roulette wheel selection
-            double choice = rnd.NextDouble(0, probSum);
+            double choice = rnd.NextDouble(0, weightsSum);
             int curNodeIndex = -1;
             while (choice >= 0)
             {
@@ -333,7 +323,8 @@ namespace CausalGeneration
                 if (curNodeIndex >= nodes.Length)
                     curNodeIndex = 0;
 
-                choice -= nodes[curNodeIndex].WeightNest.TotalWeight();
+                // choice -= nodes[curNodeIndex].WeightNest.TotalWeight();
+                choice -= nodesWeights[curNodeIndex].totalWeight;
             }
             return nodes[curNodeIndex];
         }
