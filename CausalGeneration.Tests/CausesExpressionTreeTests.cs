@@ -21,7 +21,6 @@ namespace CausalGeneration.Tests
         [Fact]
         public void ConjunctionOperationTest()
         {
-            // Todo: что, если фиксирующее значение равно 0 при вероятности 0?
             var falseEdge = TestUtils.NewFalseEdge();
             var falseEdge1 = TestUtils.NewFalseEdge();
             var trueEdge = TestUtils.NewTrueEdge();

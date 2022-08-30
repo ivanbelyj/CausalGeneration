@@ -1,10 +1,11 @@
 ﻿using CausalGeneration;
 using CausalGeneration.CausesExpressionTree;
 using CausalGeneration.Edges;
+using CausalGeneration.Model;
 using CausalGeneration.Nests;
 using CausalGeneration.Tests;
 
-// Test1();
+//Test1();
 JailpunkTest();
 
 void JailpunkTest()
@@ -12,15 +13,19 @@ void JailpunkTest()
     // Вставьте ваше расположение файла с сериализованной моделью
     const string fileName = @"C:\Users\User\source\repos\CausalGeneration\Test\jailpunk.json";
     string json = File.ReadAllText(fileName);
-    var causalModel = CausalModel<string>.FromJson(json);
+    CausalModelSerializer serializer = new CausalModelSerializer();
+    var causalModel = serializer.FromJson<CausalGenerationModel<string>, string>(json);
+    if (causalModel is null)
+        throw new Exception("Модель не десериализована");
 
-    causalModel.Generate();
+    causalModel.Generate(out CausalResultModel<string> resModel);
+
 }
 
 void Test1()
 {
     // Следующая модель генерации персонажа используется исключительно для теста и демонстрации
-    CausalModel<string> model = new CausalModel<string>();
+    CausalGenerationModel<string> model = new CausalGenerationModel<string>();
     CausalModelNode<string> hobbyRoot = model.AddNode(new ProbabilityNest(null, 0.9),
         "Хобби");
 
@@ -67,8 +72,14 @@ void Test1()
     //};
 
     // Generate(model, "new-model");
+    model.Generate(out var result);
     string modelStr = ToFile(model, "serialized-model");
-    var deserializedModel = CausalModel<string>.FromJson(modelStr);
+    string generatedModelStr = ToFile(result, "serialized-model.generated");
+
+    // var deserializedModel = CausalGenerationModel<string>.FromJson(modelStr);
+    CausalModelSerializer serializer = new CausalModelSerializer();
+    var deserializedModel = serializer.FromJson<CausalGenerationModel<string>,
+        string>(modelStr);
     if (deserializedModel == null)
         throw new Exception("Не удалось десериализовать модель.");
     // Generate(deserializedModel, "deserialized-model");
@@ -77,25 +88,29 @@ void Test1()
     ToFileAndGenerate(deserializedModel, "deserialized-model");
 }
 
-void ToFileAndGenerate<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+void ToFileAndGenerate<TNodeValue>(ICausalModel<TNodeValue> model, string fileName)
 {
     ToFile(model, fileName);
 
-    ValidationResult res = model.Generate();
-    if (!res.Succeeded)
-        throw new Exception("Ошибки валидации.");
-
-    string formatString = ".json";
-    if (fileName.Contains(formatString))
+    if (model is CausalGenerationModel<TNodeValue> genModel)
     {
-        fileName = fileName.Replace(formatString, "");
+        ValidationResult res = genModel.Generate(
+            out CausalResultModel<TNodeValue> resModel);
+        if (!res.Succeeded)
+            throw new Exception("Ошибки валидации.");
+        string formatString = ".json";
+        if (fileName.Contains(formatString))
+        {
+            fileName = fileName.Replace(formatString, "");
+        }
+        ToFile(resModel, fileName + ".result");
     }
-    ToFile(model, fileName + ".generated");
 }
 
-string ToFile<TNodeValue>(CausalModel<TNodeValue> model, string fileName)
+string ToFile<TNodeValue>(ICausalModel<TNodeValue> model, string fileName)
 {
-    string jsonString = model.ToJson(true);
+    CausalModelSerializer serializer = new CausalModelSerializer();
+    string jsonString = serializer.ToJson(model, true);
     if (!fileName.EndsWith(".json"))
     {
         fileName += ".json";

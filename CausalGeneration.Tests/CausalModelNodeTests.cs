@@ -1,5 +1,6 @@
 ﻿using CausalGeneration.CausesExpressionTree;
 using CausalGeneration.Edges;
+using CausalGeneration.Model;
 using CausalGeneration.Nests;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace CausalGeneration.Tests
         [Fact]
         public void IsRootNode()
         {
-            CausalModel<string> model = new CausalModel<string>();
+            CausalGenerationModel<string> model = new CausalGenerationModel<string>();
 
             // Root node
             //var expression = Expressions.Or(new ProbabilityEdge(1, null),

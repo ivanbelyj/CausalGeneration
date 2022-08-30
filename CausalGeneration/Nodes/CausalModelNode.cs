@@ -65,7 +65,8 @@ namespace CausalGeneration
         bool IHappenable.IsHappened { get; set; }
 
         /// <summary>
-        /// true, если для узла уже определена глубина
+        /// true, если для узла уже определена глубина. Используется при подготовке
+        /// к генерации для оптимизации
         /// </summary>
         internal bool HasLevel { get; set; }
         #endregion

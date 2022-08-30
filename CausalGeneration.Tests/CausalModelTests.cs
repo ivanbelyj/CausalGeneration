@@ -3,6 +3,7 @@ using CausalGeneration.Nests;
 using CausalGeneration.CausesExpressionTree;
 using System.Linq;
 using Xunit;
+using CausalGeneration.Model;
 
 namespace CausalGeneration.Tests
 {
@@ -12,7 +13,7 @@ namespace CausalGeneration.Tests
         public void AddNodeTest()
         {
             // Arrange
-            var model = new CausalModel<string>();
+            var model = new CausalGenerationModel<string>();
             for (int i = 0; i < 5; i++)
             {
                 // Act
@@ -27,7 +28,7 @@ namespace CausalGeneration.Tests
         public void AddVariantsGroupTest()
         {
             // Arrange
-            var model = new CausalModel<string>();
+            var model = new CausalGenerationModel<string>();
             var abstractNode = new CausalModelNode<string>(new ProbabilityNest(null, 1),
                 "Race");
             var races = new string[] {"Cheaymea", "Meraymea", "Evoymea",

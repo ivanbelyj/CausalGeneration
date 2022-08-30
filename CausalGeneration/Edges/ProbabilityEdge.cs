@@ -59,6 +59,12 @@ namespace CausalGeneration.Edges
             }
         }
 
+        /// <summary>
+        /// true, если фиксирующее значение было сгенерировано. Данная пометка дает
+        /// генерационной каузальной модели откатить сгенерированное значение
+        /// </summary>
+        internal bool IsGenerated { get; set; }
+
         public ProbabilityEdge(double probability, Guid? causeId = null,
             double? actualProbability = null)
         {

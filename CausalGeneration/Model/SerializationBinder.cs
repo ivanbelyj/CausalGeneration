@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CausalGeneration
+namespace CausalGeneration.Model
 {
-    public class KnownTypesSerializationBinder<TNodeValue> : ISerializationBinder
+    public class SerializationBinder<TNodeValue> : ISerializationBinder
     {
         private static readonly List<(Type type, string name)> _knownTypeNames = new List<(Type, string)>() {
             (typeof(ConjunctionOperation), "and"),
@@ -18,6 +18,10 @@ namespace CausalGeneration
 
             (typeof(CausalModelNode<TNodeValue>), "node"),
             (typeof(ImplementationNode<TNodeValue>), "implementation"),
+
+            // Функциональность работала и без следующих двух строчек
+            (typeof(CausalGenerationModel<TNodeValue>), "generation-model"),
+            (typeof(CausalResultModel<TNodeValue>), "result-model"),
         };
         public static List<(Type type, string name)> KnownTypeNames => _knownTypeNames;
 

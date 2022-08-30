@@ -10,21 +10,53 @@ using System.Threading.Tasks;
 using CausalGeneration.Nests;
 using CausalGeneration.Nodes;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
-namespace CausalGeneration
+namespace CausalGeneration.Model
 {
-    public class CausalModel<TNodeValue>
+    /// <summary>
+    /// Используется для моделирования сущности, представимой
+    /// в виде схемы из событий или свойств, связанных причинно-следственными связями.
+    /// </summary>
+    /// <typeparam name="TNodeValue">Тип значения, содержащегося в узле</typeparam>
+    public class CausalGenerationModel<TNodeValue> : ICausalModel<TNodeValue>
     {
         // Todo: можно добавить reference resolving, тогда можно будет хранить почти везде
         // непосредственно ссылки вместо id
-        public HashSet<CausalModelNode<TNodeValue>> Nodes { get; set; }
 
-        #region ModelCreation
-        public CausalModel()
+        /// <summary>
+        /// Все узлы каузальной модели
+        /// </summary>
+        /// Коллекция наблюдаемая по двум причинам
+        /// 1) Когда изменяется состав коллекции, требуется сделать подготовку
+        /// обновленных данных для генерации. Делать подготовку, даже если коллекция
+        /// не менялась, не эффективно
+        /// 2) Отследить изменение с помощью методов по типу Add, Remove не получится,
+        /// т.к. для сериализации требуется поле или свойство, а не методы
+        public ObservableCollection<CausalModelNode<TNodeValue>> Nodes { get; set; }
+
+        public string DeserializationTest { get; set; } = "test";
+
+        IEnumerable<CausalModelNode<TNodeValue>> ICausalModel<TNodeValue>.Nodes
+            => Nodes;
+
+
+        /// <summary>
+        /// Разложение модели по уровням. Индекс - уровень, значение - узлы уровня.
+        /// </summary>
+        private Dictionary<int, HashSet<CausalModelNode<TNodeValue>>>? _levelModel;
+        private bool _needToReset = false;
+        private bool _needToPreparate = true;
+        private bool _needToResetPreparation = false;
+        public CausalGenerationModel()
         {
-            Nodes = new HashSet<CausalModelNode<TNodeValue>>();
+            // Nodes = new HashSet<CausalModelNode<TNodeValue>>();
+            Nodes = new ObservableCollection<CausalModelNode<TNodeValue>>();
+            Nodes.CollectionChanged += (sender, e) => _needToPreparate = true;
         }
 
+        #region ModelCreation
         public void AddNodes(params CausalModelNode<TNodeValue>[] nodes)
         {
             foreach (var node in nodes)
@@ -54,38 +86,7 @@ namespace CausalGeneration
 
         #endregion
 
-        #region Json
-        // Полиморфная сериализация/десериализация необходима для
-        // CausesExpression => And, Or, Edge, Not
-        // (Nest - нет)
-        // (CausalEdge - нет)
-        // CausalModelNode => ImplementationNode
 
-        public string ToJson(bool writeIndented = false)
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings()
-            {
-                Formatting = writeIndented ? Formatting.Indented : Formatting.None,
-                NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.Auto,
-                SerializationBinder = new KnownTypesSerializationBinder<TNodeValue>()
-            };
-            return JsonConvert.SerializeObject(this, settings);
-        }
-
-        public static CausalModel<TNodeValue>? FromJson(string jsonString)
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                SerializationBinder = new KnownTypesSerializationBinder<TNodeValue>()
-            };
-
-            var model = JsonConvert.DeserializeObject<CausalModel<TNodeValue>>(jsonString,
-                settings);
-            return model;
-        }
-        #endregion
 
         // Todo: Полная валидация модели
         #region Validation
@@ -106,30 +107,82 @@ namespace CausalGeneration
         #endregion
 
         #region Generation
-
-        public ValidationResult Generate()
+        /// <summary>
+        /// Фиксирует данную генерационную модель и возвращает каузальную модель
+        /// конкретной генерируемой ситуации.
+        /// </summary>
+        /// <param name="resultModel">Результирующая модель</param>
+        public ValidationResult Generate(out CausalResultModel<TNodeValue> resultModel)
         {
             // Проверить корректность
             //ValidationResult res = ValidateModel();
             //if (!res.Succeeded)
             //    return res;
 
-            // Представить модель в вид, пригодный для генерации
-            Preparate();
+            if (_needToReset)
+            {
+                ResetGeneration();
+                _needToReset = false;
+            }
+            if (_needToPreparate)
+            {
+                if (_needToResetPreparation)
+                    ResetPreparation();
+
+                // Представить модель в вид, пригодный для генерации
+                Preparate();
+                _needToPreparate = false;
+                _needToResetPreparation = true;
+            }
 
             // Обойти модель по уровням и сгенерировать результирующую модель
-            LevelTrace();
+            var resModel = LevelTrace();
+
+            // После генерации всегда требуется сброс, однако сброс требуется только
+            // в случаях повторных генераций
+            _needToReset = true;
+
+            resultModel = resModel;
 
             return ValidationResult.Success;
         }
 
+
+
         /// <summary>
-        /// Разложение модели по уровням. Индекс - уровень, значение - узлы уровня.
+        /// Сбрасывает элементы состояния генерационной модели и ее составных
+        /// элементов (ребер, узлов, и т.д.) для возможности повторной генерации
         /// </summary>
-        private Dictionary<int, HashSet<CausalModelNode<TNodeValue>>>? _levelModel;
+        private void ResetGeneration()
+        {
+            foreach (var node in Nodes)
+            {
+                ((IHappenable)node).IsHappened = false;
+                foreach (var edge in node.GetEdges())
+                    if (edge is ProbabilityEdge probEdge &&
+                        probEdge.IsGenerated)
+                    {
+                        probEdge.FixingValue = null;
+                        probEdge.IsGenerated = false;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Сбрасывает изменения, внесенные подготовительным этапом, которые могут
+        /// помешать следующей подготовке
+        /// </summary>
+        private void ResetPreparation()
+        {
+            foreach (var node in Nodes)
+                node.HasLevel = false;
+            _levelModel = null;
+        }
 
         /// <summary>
         /// Этап предварительной подготовки данных для любых последующих генераций.
+        /// Устанавливает ссылки на причины (вместо id),
+        /// располагает узлы модели по уровням, опираясь на глубину
         /// </summary>
         private void Preparate()
         {
@@ -142,6 +195,10 @@ namespace CausalGeneration
                 {
                     if (edge.CauseId is null)
                         continue;
+
+                    // Todo: Если во внешнем коде изменится CauseId,
+                    // _needToPreparate не будет установлен. Кроме того,
+                    // вызывать Preparate только для обновления Cause не эффективно
 
                     // Причины берутся по id заранее для всех последующих генераций
                     // Todo: если элемент с таким id не существует - ошибка
@@ -204,7 +261,7 @@ namespace CausalGeneration
         /// <summary>
         /// На основе подготовленных данных обходит модель и генерирует результирующую
         /// </summary>
-        private void LevelTrace()
+        private CausalResultModel<TNodeValue> LevelTrace()
         {
             if (_levelModel is null)
                 throw new InvalidOperationException("Модель не подготовлена для обхода по уровням");
@@ -266,7 +323,8 @@ namespace CausalGeneration
                         happened.Add(node);
             }
 
-            Nodes = happened;
+            // Nodes = happened;
+            return new CausalResultModel<TNodeValue>(happened.ToList());
         }
 
         private Dictionary<CausalModelNode<TNodeValue>,
@@ -347,9 +405,11 @@ namespace CausalGeneration
             // Определить неопределенные ранее фиксирующие значения для всех ребер
             foreach (ProbabilityEdge edge in node.ProbabilityNest.GetEdges())
             {
-                if (edge.FixingValue == null)
+                if (edge.FixingValue is null)
                 {
                     edge.FixingValue = rnd.NextDouble();
+                    edge.IsGenerated = true;
+                    // _needToReset = true;
                 }
             }
         }
