@@ -1,25 +1,32 @@
 ﻿using CausalGeneration;
+using CausalGeneration.CausalEntity;
 using CausalGeneration.CausesExpressionTree;
 using CausalGeneration.Edges;
 using CausalGeneration.Model;
 using CausalGeneration.Nests;
 using CausalGeneration.Tests;
 
-//Test1();
+// Test1();
 JailpunkTest();
 
 void JailpunkTest()
 {
-    // Вставьте ваше расположение файла с сериализованной моделью
+    // Вставьте расположение файла с сериализованной моделью jailpunk.json
     const string fileName = @"C:\Users\User\source\repos\CausalGeneration\Test\jailpunk.json";
     string json = File.ReadAllText(fileName);
     CausalModelSerializer serializer = new CausalModelSerializer();
-    var causalModel = serializer.FromJson<CausalGenerationModel<string>, string>(json);
+    var causalModel = serializer.FromJson<CausalGenerationModel<DescriptionEntityProperty>,
+        DescriptionEntityProperty>(json);
     if (causalModel is null)
         throw new Exception("Модель не десериализована");
 
-    causalModel.Generate(out CausalResultModel<string> resModel);
+    causalModel.Generate(out CausalResultModel<DescriptionEntityProperty> resModel);
 
+    // Собрать окончательную сущность как результат генерации в удобном виде
+    DescriptionEntityBuilder builder = new DescriptionEntityBuilder(resModel);
+    DescriptionEntity entity = builder.Build();
+    Console.WriteLine(entity.EntityDescription);
+    Console.ReadKey(true);
 }
 
 void Test1()
