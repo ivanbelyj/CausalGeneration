@@ -49,6 +49,7 @@ namespace CausalGeneration.Model
         private bool _needToReset = false;
         private bool _needToPreparate = true;
         private bool _needToResetPreparation = false;
+
         public CausalGenerationModel()
         {
             // Nodes = new HashSet<CausalModelNode<TNodeValue>>();
@@ -85,8 +86,6 @@ namespace CausalGeneration.Model
         }
 
         #endregion
-
-
 
         // Todo: Полная валидация модели
         #region Validation
@@ -175,7 +174,9 @@ namespace CausalGeneration.Model
         private void ResetPreparation()
         {
             foreach (var node in Nodes)
+            {
                 node.HasLevel = false;
+            }
             _levelModel = null;
         }
 
@@ -268,6 +269,8 @@ namespace CausalGeneration.Model
 
             // Узлы, входящие в окончательную выборку произошедшего
             var happened = new HashSet<CausalModelNode<TNodeValue>>();
+            var abstrAndImpls = new Dictionary<CausalModelNode<TNodeValue>,
+                CausalModelNode<TNodeValue>?>();
 
             // Цикл проходит по уровням (их можно сравнить с хронологией событий)
             // и выбирает то, что произошло
@@ -303,16 +306,25 @@ namespace CausalGeneration.Model
 
                 // После отбрасывания того, что точно не произошло, можно получить
                 // все группы вариантов и определить их одним разом.
-                // Группа может простираться лишь по одному уровню, поэтому ее возможно получить
+                // Группа может простираться лишь по одному уровню, поэтому ее
+                // возможно получить
                 var implGroups = GetLevelImplementationGroups(necessary);
                 foreach ((var abstrEntity, var group) in implGroups)
                 {
                     // Выбрать единственную реализацию из группы
                     var oneNode = SelectImplementation(group.ToArray());
 
+                    // Добавить в окончательный список реализаций и их абстрактных
+                    // узлов для результата
+                    if (((IHappenable)abstrEntity).IsHappened)
+                        abstrAndImpls.Add(abstrEntity, oneNode);
+
                     // Узел остался без реализации, это нормально
                     if (oneNode is null)
+                    {
                         continue;
+                    }
+
                     ((IHappenable)oneNode).IsHappened = true;
                     // Остальные варианты остаются непомеченными
                 }
@@ -324,7 +336,7 @@ namespace CausalGeneration.Model
             }
 
             // Nodes = happened;
-            return new CausalResultModel<TNodeValue>(happened.ToList());
+            return new CausalResultModel<TNodeValue>(happened.ToList(), abstrAndImpls);
         }
 
         private Dictionary<CausalModelNode<TNodeValue>,

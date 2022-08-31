@@ -18,16 +18,45 @@ namespace CausalGeneration.CausalEntity
         public virtual DescriptionEntity Build()
         {
             StringBuilder sb = new StringBuilder();
+
+            // Описание абстрактной сущности всегда идет перед описнием реализации
             foreach (var node in _model.Nodes)
             {
-                if (node.Value is null || node.Value.Text is null)
+                // Если дан абстрактный узел - он будет добавлен позже
+                if (_model.IsAbstract(node))
                     continue;
-                string textToAdd = node.Value.Text.Trim();
-                sb.Append(textToAdd);
-                if (textToAdd != "")
-                    sb.Append(" ");
+
+                // Добавляем описание абстрактной сущности только в тот момент,
+                // когда встречается ее реализация
+                if (node is ImplementationNode<DescriptionEntityProperty> implNode)
+                {
+                    var abstractNode = _model.GetAbstractByImplmentation(implNode);
+                    AddToSB(sb, abstractNode);
+                }
+                AddToSB(sb, node);
             }
+
+            // Абстрактные узлы могут не иметь реализации, поэтому выбираются и
+            // добавляются
+            foreach ((var aNode, _) in _model.AbstractsAndImpls.Where(pair
+                => pair.Value is null))
+            {
+                AddToSB(sb, aNode);
+            }
+
             return new DescriptionEntity() { EntityDescription = sb.ToString() };
+
+            void AddToSB(StringBuilder sb,
+                CausalModelNode<DescriptionEntityProperty> node)
+            {
+                if (node.Value is not null && node.Value.Text is not null)
+                {
+                    string textToAdd = node.Value.Text.Trim();
+                    sb.Append(textToAdd);
+                    if (textToAdd != "")
+                        sb.Append(" ");
+                }
+            }
         }
     }
 }

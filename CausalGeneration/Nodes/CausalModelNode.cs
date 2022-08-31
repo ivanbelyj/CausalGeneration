@@ -69,6 +69,7 @@ namespace CausalGeneration
         /// к генерации для оптимизации
         /// </summary>
         internal bool HasLevel { get; set; }
+
         #endregion
 
         public override string? ToString() => Value?.ToString() ?? Id.ToString();
