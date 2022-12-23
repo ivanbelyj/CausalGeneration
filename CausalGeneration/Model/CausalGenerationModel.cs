@@ -330,6 +330,9 @@ namespace CausalGeneration.Model
                 }
 
                 // Окончательная выборка
+                // Todo: В результирующую модель добавляются те же самые узлы.
+                // Изменения в результирующей модели приведут к мутациям в
+                // генерационной
                 foreach (var node in necessary)
                     if (((IHappenable)node).IsHappened)
                         happened.Add(node);
