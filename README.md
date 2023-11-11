@@ -1,3 +1,2 @@
-# CausalGeneration
-Библиотека причинно-следственной генерации.
-В данный момент не актуально. Последующее идейное и архитектурное усовершенствование проекта CausalGeneration - DynamicCausalModel (CausalModel), который, в первую очередь, пригоден для использования в реальном времени (например, в играх). 
+# Deprecated
+Old version of causal generation model and library. The subsequent ideological and architectural improvement of the CausalGeneration project is the CausalModel (https://github.com/ivanbelyj/CausalModel), which, first of all, is suitable for use in real time (for example, in games).
